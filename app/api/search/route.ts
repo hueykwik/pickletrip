@@ -1,8 +1,11 @@
 import { NextRequest } from 'next/server';
 import { scrapePlayByPoint } from '@/agents/playbypoint.mjs';
+import { scrapeCourtReserve } from '@/agents/courtreserve.mjs';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes
+
+type ScrapeFn = (city: string, dateFrom: Date, dateTo: Date) => Promise<unknown[]>;
 
 export async function POST(req: NextRequest) {
   const { city, dateFrom, dateTo } = await req.json();
@@ -26,15 +29,22 @@ export async function POST(req: NextRequest) {
 
       let total = 0;
 
-      try {
-        const games = await (scrapePlayByPoint as (city: string, dateFrom: Date, dateTo: Date) => Promise<unknown[]>)(city, from, to);
-        emit({ source: 'playbypoint', games });
-        total += games.length;
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
-        console.error('[api/search] PlayByPoint error:', message);
-        emit({ source: 'playbypoint', error: message, games: [] });
-      }
+      const sources: Array<{ source: string; fn: ScrapeFn }> = [
+        { source: 'playbypoint', fn: scrapePlayByPoint as ScrapeFn },
+        { source: 'courtreserve', fn: scrapeCourtReserve as ScrapeFn },
+      ];
+
+      await Promise.all(sources.map(async ({ source, fn }) => {
+        try {
+          const games = await fn(city, from, to);
+          emit({ source, games });
+          total += games.length;
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Unknown error';
+          console.error(`[api/search] ${source} error:`, message);
+          emit({ source, error: message, games: [] });
+        }
+      }));
 
       emit({ done: true, total });
       controller.close();

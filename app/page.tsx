@@ -54,7 +54,10 @@ export default function Home() {
     abortRef.current = new AbortController();
 
     setGames([]);
-    setAgents([{ source: 'playbypoint', status: 'searching' }]);
+    setAgents([
+      { source: 'playbypoint', status: 'searching' },
+      { source: 'courtreserve', status: 'searching' },
+    ]);
     setSearching(true);
     setDone(false);
 

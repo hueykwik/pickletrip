@@ -187,3 +187,5 @@
 [2026-03-26T04:38:44.314Z] GET http://localhost:3000/_next/static/chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts_10mygs7._.js → 200 (59ms, 289B)
 [2026-03-26T04:38:44.381Z] GET http://localhost:3000/__nextjs_font/geist-latin.woff2 → 200 (?ms, ?B)
 [2026-03-26T04:39:36.325Z] POST http://localhost:3000/api/search → 200 (90ms, 74B)
+[2026-03-26T05:08:50.123Z] GET http://localhost:3000/?_rsc=wnywt → 200 (167ms, 6500B)
+[2026-03-26T05:08:50.125Z] GET http://localhost:3000/?_rsc=wnywt → 200 (136ms, 6500B)

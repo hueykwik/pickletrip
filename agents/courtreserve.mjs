@@ -76,7 +76,7 @@ function parseLevel(name) {
 function parseStatus(statusText) {
   const t = statusText.toLowerCase();
   if (t.includes('full') || t.includes('waitlist')) return 'full';
-  if (t.includes('register') || t.includes('spots remaining') || t.includes('registration opens')) return 'open';
+  if (t.includes('register') || t.includes('spots remaining') || t.includes('registration opens') || t.includes('registration not allowed')) return 'open';
   return 'unknown';
 }
 
@@ -127,11 +127,20 @@ async function getEventSessions(page, eventUrl, facilityName, dateFrom, dateTo) 
   });
   if (isLoginWall) return [];
 
+  // DATES content loads lazily — click the DATES tab to populate it
+  try {
+    const datesBtn = await page.$('text=DATES');
+    if (datesBtn) {
+      await datesBtn.click();
+      await page.waitForTimeout(1000);
+    }
+  } catch { /* ignore */ }
+
   const data = await page.evaluate(() => {
     const body = document.body.innerText;
 
     // Event name: first heading after the nav
-    const h2s = Array.from(document.querySelectorAll('h2, h3, .event-title, [class*="title"]'));
+    const h2s = Array.from(document.querySelectorAll('h4, h3, h2, h1'));
     const nameEl = h2s.find(el => el.innerText.trim().length > 3 && !el.innerText.includes('DATES'));
     const eventName = nameEl?.innerText?.trim() ?? '';
 
@@ -140,13 +149,17 @@ async function getEventSessions(page, eventUrl, facilityName, dateFrom, dateTo) 
     const fullText = body;
     const datesIdx = fullText.indexOf('DATES (');
     if (datesIdx === -1) {
-      // Single occurrence — parse from top-level
-      // Pattern: eventName \n date \n time \n price \n status
       return { eventName, dates: [] };
     }
 
-    const datesSection = fullText.slice(datesIdx + fullText.slice(datesIdx).indexOf('\n') + 1);
-    const lines = datesSection.split('\n').map(l => l.trim()).filter(Boolean);
+    // Skip the "DATES (N)" header line itself
+    const afterHeader = fullText.slice(datesIdx);
+    const firstNewline = afterHeader.indexOf('\n');
+    const datesSection = afterHeader.slice(firstNewline + 1);
+
+    const lines = datesSection.split('\n').map(l => l.trim()).filter(l =>
+      l && l !== '© 2026 Powered by CourtReserve' && !l.startsWith('©')
+    );
 
     // Group into blocks: each block starts with a day-of-week date line
     const datePattern = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s/;
