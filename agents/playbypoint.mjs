@@ -1,6 +1,6 @@
 /**
  * PlayByPoint agent
- * Scrapes pickleball game sessions for a city + date range.
+ * Scrapes pickleball game sessions for a list of facilities + date range.
  *
  * Usage: node agents/playbypoint.mjs
  * Or import scrapePlayByPoint() from Next.js API route.
@@ -9,12 +9,6 @@ import { chromium } from 'playwright-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 chromium.use(StealthPlugin());
-
-// Known facility slugs per city. Expand as needed.
-const CITY_FACILITIES = {
-  'west hollywood': ['west-hollywood-park-tennis-cuurts', 'plummer-park'],
-  'weho': ['west-hollywood-park-tennis-cuurts', 'plummer-park'],
-};
 
 const BASE_URL = 'https://app.playbypoint.com';
 
@@ -83,7 +77,7 @@ async function getFacilityPrograms(page, facilitySlug) {
 /**
  * Scrape all sessions from a program page, filtered by date range.
  */
-async function getProgramSessions(page, program, dateFrom, dateTo) {
+async function getProgramSessions(page, program, facility, dateFrom, dateTo) {
   await page.goto(program.url, { waitUntil: 'networkidle', timeout: 30000 });
   await page.waitForTimeout(1500);
 
@@ -104,11 +98,11 @@ async function getProgramSessions(page, program, dateFrom, dateTo) {
 
   const sessions = await page.evaluate(({ programUrl, programName, venueName }) => {
     const cards = Array.from(document.querySelectorAll('.pbc.black.card'));
-    return cards.map(card => {
+    return cards.map((card, index) => {
       const dateEl = card.querySelector('.text.big.semi.bold.header_font, [class*="header_font"]');
       const timeEl = card.querySelector('.meta');
       const statusEl = card.querySelector('.pbc_reservation_status_text span, [class*="status_text"] span');
-      const sessionId = card.getAttribute('data-id') || card.getAttribute('data-lesson') || '';
+      const sessionId = card.getAttribute('data-id') || card.getAttribute('data-lesson') || String(index);
 
       return {
         id: `pbp-${sessionId}`,
@@ -119,7 +113,7 @@ async function getProgramSessions(page, program, dateFrom, dateTo) {
         time: timeEl?.innerText?.trim() ?? '',
         status: statusEl?.innerText?.trim().toLowerCase() ?? 'unknown',
         level: null, // filled in by caller from program.level
-        url: programUrl,
+        url: programUrl.startsWith('https://') ? programUrl : `https://${programUrl.replace(/^https?:\/\//, '')}`,
         price: null,
       };
     });
@@ -134,23 +128,22 @@ async function getProgramSessions(page, program, dateFrom, dateTo) {
     } catch {
       return false;
     }
-  }).map(s => ({ ...s, level: program.level }));
+  }).map(s => ({ ...s, level: program.level, city: facility.city }));
 }
 
 /**
- * Main export: scrape PlayByPoint for a city + date range.
+ * Main export: scrape PlayByPoint for a list of facilities + date range.
  *
- * @param {string} city - e.g. "west hollywood"
+ * @param {import('../lib/cities.js').PlayByPointFacility[]} facilities
  * @param {Date} dateFrom
  * @param {Date} dateTo
- * @returns {Promise<Game[]>}
+ * @returns {Promise<import('../lib/types.js').Game[]>}
  */
-export async function scrapePlayByPoint(city, dateFrom, dateTo) {
-  const facilitySlugs = CITY_FACILITIES[city.toLowerCase().trim()];
-  if (!facilitySlugs) {
-    console.warn(`[playbypoint] No facility slugs for city: ${city}`);
-    return [];
-  }
+export async function scrapePlayByPoint(facilities, dateFrom, dateTo) {
+  if (!facilities || facilities.length === 0) return [];
+
+  const pbpFacilities = facilities.filter(f => f.source === 'playbypoint');
+  if (pbpFacilities.length === 0) return [];
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -161,13 +154,13 @@ export async function scrapePlayByPoint(city, dateFrom, dateTo) {
   try {
     const page = await context.newPage();
 
-    for (const slug of facilitySlugs) {
-      console.error(`[playbypoint] Scanning facility: ${slug}`);
+    for (const facility of pbpFacilities) {
+      console.error(`[playbypoint] Scanning facility: ${facility.name} (${facility.slug})`);
       let programs;
       try {
-        programs = await getFacilityPrograms(page, slug);
+        programs = await getFacilityPrograms(page, facility.slug);
       } catch (err) {
-        console.error(`[playbypoint] Failed to load facility ${slug}: ${err.message}`);
+        console.error(`[playbypoint] Failed to load facility ${facility.slug}: ${err.message}`);
         continue;
       }
       console.error(`[playbypoint] Found ${programs.length} pickleball programs`);
@@ -175,7 +168,7 @@ export async function scrapePlayByPoint(city, dateFrom, dateTo) {
       for (const program of programs) {
         console.error(`[playbypoint] Scraping: ${program.name}`);
         try {
-          const sessions = await getProgramSessions(page, program, dateFrom, dateTo);
+          const sessions = await getProgramSessions(page, program, facility, dateFrom, dateTo);
           console.error(`[playbypoint] ${sessions.length} sessions in date range`);
           games.push(...sessions);
         } catch (err) {
@@ -196,8 +189,13 @@ if (process.argv[1].endsWith('playbypoint.mjs')) {
   const dateTo = new Date();
   dateTo.setDate(dateTo.getDate() + 7);
 
+  const testFacilities = [
+    { source: 'playbypoint', name: 'West Hollywood Park', city: 'West Hollywood', slug: 'west-hollywood-park-tennis-courts' },
+    { source: 'playbypoint', name: 'Plummer Park', city: 'West Hollywood', slug: 'plummer-park' },
+  ];
+
   console.error(`[playbypoint] Searching West Hollywood, ${dateFrom.toDateString()} – ${dateTo.toDateString()}`);
-  const games = await scrapePlayByPoint('west hollywood', dateFrom, dateTo);
+  const games = await scrapePlayByPoint(testFacilities, dateFrom, dateTo);
   console.log(JSON.stringify(games, null, 2));
   console.error(`\n[playbypoint] Total: ${games.length} games found`);
 }

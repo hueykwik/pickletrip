@@ -1,6 +1,6 @@
 /**
  * CourtReserve agent
- * Scrapes pickleball events (open play, clinics, drills) for a city + date range.
+ * Scrapes pickleball events (open play, clinics, drills) for a list of facilities + date range.
  *
  * Usage: node agents/courtreserve.mjs
  * Or import scrapeCourtReserve() from Next.js API route.
@@ -16,16 +16,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 chromium.use(StealthPlugin());
 
-/**
- * Known CourtReserve facility booking URLs per city.
- * URL format: https://app.courtreserve.com/Online/Reservations/Bookings/{facilityId}?sId={sportId}
- * sId is the sport ID — use the pickleball-specific sId if available.
- */
-const CITY_FACILITIES = {
-  // West Hollywood uses PlayByPoint (West Hollywood Park + Plummer Park) — no CourtReserve venues.
-  // Add CourtReserve cities here as you discover them:
-  // 'city name': [{ name: 'Venue Name', url: 'https://app.courtreserve.com/Online/Reservations/Bookings/{id}?sId={sportId}' }],
-};
+// Facility list is now passed in via the facilities parameter — see lib/cities.ts
 
 const BASE_URL = 'https://app.courtreserve.com';
 
@@ -155,7 +146,7 @@ async function getEventSessions(page, eventUrl, facilityName, dateFrom, dateTo) 
     const datesSection = afterHeader.slice(firstNewline + 1);
 
     const lines = datesSection.split('\n').map(l => l.trim()).filter(l =>
-      l && l !== '© 2026 Powered by CourtReserve' && !l.startsWith('©')
+      l && !l.startsWith('©')
     );
 
     // Group into blocks: each block starts with a day-of-week date line
@@ -216,19 +207,18 @@ async function getEventSessions(page, eventUrl, facilityName, dateFrom, dateTo) 
 }
 
 /**
- * Main export: scrape CourtReserve for a city + date range.
+ * Main export: scrape CourtReserve for a list of facilities + date range.
  *
- * @param {string} city
+ * @param {import('../lib/cities.js').CourtReserveFacility[]} facilities
  * @param {Date} dateFrom
  * @param {Date} dateTo
- * @returns {Promise<Game[]>}
+ * @returns {Promise<import('../lib/types.js').Game[]>}
  */
-export async function scrapeCourtReserve(city, dateFrom, dateTo) {
-  const facilities = CITY_FACILITIES[city.toLowerCase().trim()];
-  if (!facilities) {
-    console.warn(`[courtreserve] No facilities for city: ${city}`);
-    return [];
-  }
+export async function scrapeCourtReserve(facilities, dateFrom, dateTo) {
+  if (!facilities || facilities.length === 0) return [];
+
+  const crFacilities = facilities.filter(f => f.source === 'courtreserve');
+  if (crFacilities.length === 0) return [];
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -239,7 +229,7 @@ export async function scrapeCourtReserve(city, dateFrom, dateTo) {
   try {
     const page = await context.newPage();
 
-    for (const facility of facilities) {
+    for (const facility of crFacilities) {
       console.error(`[courtreserve] Scanning facility: ${facility.name}`);
 
       // Collect event URLs across all days in the range
@@ -259,7 +249,7 @@ export async function scrapeCourtReserve(city, dateFrom, dateTo) {
         try {
           const sessions = await getEventSessions(page, eventUrl, facility.name, dateFrom, dateTo);
           console.error(`[courtreserve] ${eventUrl.split('/').pop()}: ${sessions.length} sessions in range`);
-          games.push(...sessions);
+          games.push(...sessions.map(s => ({ ...s, city: facility.city })));
         } catch (err) {
           console.error(`[courtreserve] Failed ${eventUrl}: ${err.message}`);
         }
@@ -278,8 +268,8 @@ if (process.argv[1].endsWith('courtreserve.mjs')) {
   const dateTo = new Date();
   dateTo.setDate(dateTo.getDate() + 7);
 
-  console.error(`[courtreserve] Searching West Hollywood, ${dateFrom.toDateString()} – ${dateTo.toDateString()}`);
-  const games = await scrapeCourtReserve('west hollywood', dateFrom, dateTo);
+  console.error(`[courtreserve] No CourtReserve facilities configured yet — add them to lib/cities.ts`);
+  const games = await scrapeCourtReserve([], dateFrom, dateTo);
   console.log(JSON.stringify(games, null, 2));
   console.error(`\n[courtreserve] Total: ${games.length} games found`);
 }

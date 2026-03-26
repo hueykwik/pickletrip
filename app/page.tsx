@@ -3,19 +3,7 @@
 import { useState, useRef } from 'react';
 import GameCard from '@/components/GameCard';
 import AgentStatus from '@/components/AgentStatus';
-
-interface Game {
-  id: string;
-  source: string;
-  venue: string;
-  programName: string;
-  date: string;
-  time: string;
-  status: string;
-  level: string | null;
-  url: string;
-  price: string | null;
-}
+import type { Game } from '@/lib/types';
 
 interface AgentState {
   source: string;
@@ -33,6 +21,15 @@ const LEVELS = [
   { value: '4.5+', label: '4.5+' },
 ];
 
+function parseGameDate(dateStr: string): Date {
+  const now = new Date();
+  const parsed = new Date(`${dateStr} ${now.getFullYear()}`);
+  if (now.getTime() - parsed.getTime() > 60 * 24 * 60 * 60 * 1000) {
+    parsed.setFullYear(now.getFullYear() + 1);
+  }
+  return parsed;
+}
+
 export default function Home() {
   const [city, setCity] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -42,6 +39,7 @@ export default function Home() {
 
   const [games, setGames] = useState<Game[]>([]);
   const [agents, setAgents] = useState<AgentState[]>([]);
+  const [metroName, setMetroName] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
   const [done, setDone] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -54,6 +52,7 @@ export default function Home() {
     abortRef.current = new AbortController();
 
     setGames([]);
+    setMetroName(null);
     setAgents([
       { source: 'playbypoint', status: 'searching' },
       { source: 'courtreserve', status: 'searching' },
@@ -86,8 +85,20 @@ export default function Home() {
           if (!line.startsWith('data: ')) continue;
           try {
             const payload = JSON.parse(line.slice(6));
+            if ('metroName' in payload) {
+              setMetroName(payload.metroName);
+            }
             if (payload.games) {
-              setGames(prev => [...prev, ...payload.games]);
+              setGames(prev => {
+                const combined = [...prev, ...payload.games];
+                return combined.sort((a, b) => {
+                  try {
+                    return parseGameDate(a.date).getTime() - parseGameDate(b.date).getTime();
+                  } catch {
+                    return 0;
+                  }
+                });
+              });
               setAgents(prev =>
                 prev.map(a =>
                   a.source === payload.source
@@ -194,6 +205,12 @@ export default function Home() {
           {searching ? 'Searching…' : 'Find games'}
         </button>
       </form>
+
+      {metroName && (
+        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+          Showing results for {metroName}
+        </p>
+      )}
 
       {agents.length > 0 && <AgentStatus agents={agents} />}
 

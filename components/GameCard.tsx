@@ -1,15 +1,4 @@
-interface Game {
-  id: string;
-  source: string;
-  venue: string;
-  programName: string;
-  date: string;
-  time: string;
-  status: string;
-  level: string | null;
-  url: string;
-  price: string | null;
-}
+import type { Game } from '@/lib/types';
 
 const SOURCE_LABELS: Record<string, string> = {
   playbypoint: 'PlayByPoint',
@@ -59,6 +48,11 @@ export default function GameCard({ game }: { game: Game }) {
               }}
             >
               {game.level}
+            </span>
+          )}
+          {game.city && (
+            <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+              {game.city}
             </span>
           )}
         </div>
