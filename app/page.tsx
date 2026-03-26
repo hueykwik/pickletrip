@@ -118,6 +118,10 @@ export default function Home() {
             }
             if (payload.done) {
               setDone(true);
+              // Mark any still-searching agents as done (handles unknown city short-circuit)
+              setAgents(prev =>
+                prev.map(a => a.status === 'searching' ? { ...a, status: 'done', count: 0 } : a)
+              );
             }
           } catch {
             // ignore parse errors
