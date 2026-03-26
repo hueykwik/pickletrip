@@ -1,0 +1,258 @@
+[2026-03-26T04:29:29.553Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:29:29.937Z] [log] [HMR] connected
+[2026-03-26T04:33:25.953Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:33:26.135Z] [log] [Fast Refresh] done in 236ms
+[2026-03-26T04:33:29.439Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:33:29.459Z] [log] [Fast Refresh] done in 28ms
+[2026-03-26T04:33:37.600Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:33:37.634Z] [log] [HMR] connected
+[2026-03-26T04:33:37.705Z] [error] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                    <SegmentViewNode type="page" pagePath="page.tsx">
+                      <SegmentTrieNode>
+                      <ClientPageRoot Component={function Home} serverProvidedParams={{...}}>
+                        <Home params={Promise} searchParams={Promise}>
+                          <main style={{maxWidth:760, ...}}>
+                            <h1>
+                            <p>
+                            <form onSubmit={function handleSearch} style={{display:"flex", ...}}>
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 gap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 gap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              ...
+                    ...
+                  ...
+      ...
+
+[2026-03-26T04:33:37.775Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:33:37.813Z] [log] [Fast Refresh] done in 156ms
+[2026-03-26T04:34:36.754Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:34:36.777Z] [log] [Fast Refresh] done in 29ms
+[2026-03-26T04:34:47.490Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:34:47.527Z] [log] [HMR] connected
+[2026-03-26T04:34:47.545Z] [error] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                    <SegmentViewNode type="page" pagePath="page.tsx">
+                      <SegmentTrieNode>
+                      <ClientPageRoot Component={function Home} serverProvidedParams={{...}}>
+                        <Home params={Promise} searchParams={Promise}>
+                          <main style={{maxWidth:760, ...}}>
+                            <h1>
+                            <p>
+                            <form onSubmit={function handleSearch} style={{display:"flex", ...}}>
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 rowGap: "0.75rem"
++                                 columnGap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 gap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              ...
+                    ...
+                  ...
+      ...
+
+[2026-03-26T04:35:37.571Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:35:37.593Z] [log] [HMR] connected
+[2026-03-26T04:35:37.610Z] [error] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                    <SegmentViewNode type="page" pagePath="page.tsx">
+                      <SegmentTrieNode>
+                      <ClientPageRoot Component={function Home} serverProvidedParams={{...}}>
+                        <Home params={Promise} searchParams={Promise}>
+                          <main style={{maxWidth:760, ...}}>
+                            <h1>
+                            <p>
+                            <form onSubmit={function handleSearch} style={{display:"flex", ...}}>
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 rowGap: "0.75rem"
++                                 columnGap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 gap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              ...
+                    ...
+                  ...
+      ...
+
+[2026-03-26T04:36:09.118Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:36:09.141Z] [log] [Fast Refresh] done in 102ms
+[2026-03-26T04:36:09.241Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:36:09.241Z] [log] [Fast Refresh] done in 101ms
+[2026-03-26T04:36:13.265Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:36:13.282Z] [log] [Fast Refresh] done in 34ms
+[2026-03-26T04:36:25.351Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:36:25.408Z] [log] [HMR] connected
+[2026-03-26T04:36:25.593Z] [error] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+        <LoadingBoundary name="/" loading={null}>
+          <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+                    <SegmentViewNode type="page" pagePath="page.tsx">
+                      <SegmentTrieNode>
+                      <ClientPageRoot Component={function Home} serverProvidedParams={{...}}>
+                        <Home params={Promise} searchParams={Promise}>
+                          <main style={{maxWidth:760, ...}}>
+                            <h1>
+                            <p>
+                            <form onSubmit={function handleSearch} style={{display:"flex", ...}}>
+                              <div
++                               className="form-row"
+-                               className={null}
+-                               style={{display:"grid",grid-template-columns:"1fr 1fr 1fr",row-gap:"0.75rem",column-gap:"0.75rem"}}
+                              >
+                              <div
+                                style={{
++                                 display: "grid"
+-                                 display: "grid"
++                                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"
++                                 gap: "0.75rem"
+-                                 grid-template-columns: "1fr 1fr"
+-                                 row-gap: "0.75rem"
+-                                 column-gap: "0.75rem"
+                                }}
+                              >
+                              ...
+                    ...
+                  ...
+      ...
+
+[2026-03-26T04:37:00.747Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:37:01.403Z] [log] [Fast Refresh] done in 429ms
+[2026-03-26T04:37:01.919Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:37:02.176Z] [log] [HMR] connected
+[2026-03-26T04:37:02.228Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:37:02.228Z] [log] [Fast Refresh] done in 120ms
+[2026-03-26T04:37:04.901Z] [log] [Fast Refresh] rebuilding
+[2026-03-26T04:37:04.950Z] [log] [Fast Refresh] done in 9ms
+[2026-03-26T04:37:16.855Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:37:16.869Z] [log] [HMR] connected
+[2026-03-26T04:38:04.480Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:38:04.503Z] [log] [HMR] connected
+[2026-03-26T04:38:44.307Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-26T04:38:44.379Z] [log] [HMR] connected

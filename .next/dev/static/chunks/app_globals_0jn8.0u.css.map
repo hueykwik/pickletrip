@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///Users/huey/pickletrip/app/globals.css"],"sourcesContent":["* { box-sizing: border-box; }\n\n@keyframes spin {\n  to { transform: rotate(360deg); }\n}\n\n.form-row {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));\n  gap: 0.75rem;\n}\n"],"names":[],"mappings":"AAAA;;;;AAEA;;;;;;AAIA"}}]
+}
