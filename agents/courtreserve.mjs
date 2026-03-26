@@ -22,12 +22,9 @@ chromium.use(StealthPlugin());
  * sId is the sport ID — use the pickleball-specific sId if available.
  */
 const CITY_FACILITIES = {
-  'west hollywood': [
-    { name: 'Maui Country Club', url: 'https://app.courtreserve.com/Online/Reservations/Bookings/2457?sId=915' },
-  ],
-  'weho': [
-    { name: 'Maui Country Club', url: 'https://app.courtreserve.com/Online/Reservations/Bookings/2457?sId=915' },
-  ],
+  // West Hollywood uses PlayByPoint (West Hollywood Park + Plummer Park) — no CourtReserve venues.
+  // Add CourtReserve cities here as you discover them:
+  // 'city name': [{ name: 'Venue Name', url: 'https://app.courtreserve.com/Online/Reservations/Bookings/{id}?sId={sportId}' }],
 };
 
 const BASE_URL = 'https://app.courtreserve.com';
