@@ -73,7 +73,13 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         city: 'Beverly Hills',
         url: 'https://beverlyhillslctc.playbypoint.com',
       },
-      // TODO: Add California Smash (El Segundo) once CourtReserve facility ID is confirmed
+      // El Segundo
+      {
+        source: 'courtreserve',
+        name: 'California Smash',
+        city: 'El Segundo',
+        url: 'https://app.courtreserve.com/Online/Events/Index/16314',
+      },
     ],
   },
 };

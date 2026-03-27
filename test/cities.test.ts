@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { resolveFacilities, resolveMetroName } from '../lib/cities';
 
-const LA_FACILITY_COUNT = 7;
+const LA_FACILITY_COUNT = 8;
 
 describe('resolveFacilities', () => {
   it(`returns ${LA_FACILITY_COUNT} facilities for "west hollywood"`, () => {
     const facilities = resolveFacilities('west hollywood');
     expect(facilities).toHaveLength(LA_FACILITY_COUNT);
-    expect(facilities.every(f => f.source === 'playbypoint')).toBe(true);
+    expect(facilities.some(f => f.source === 'playbypoint')).toBe(true);
+    expect(facilities.some(f => f.source === 'courtreserve')).toBe(true);
   });
 
   it(`returns ${LA_FACILITY_COUNT} facilities for alias "la"`, () => {
