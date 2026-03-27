@@ -43,14 +43,21 @@ function parseLevel(programName) {
 
 /**
  * Scrape all pickleball programs from a facility page.
+ * Accepts either a slug (app.playbypoint.com/f/{slug}) or a full URL
+ * for branded/subdomain facilities (e.g. https://piklla.playbypoint.com).
  * Returns array of { name, url, level }.
  */
-async function getFacilityPrograms(page, facilitySlug) {
-  const url = `${BASE_URL}/f/${facilitySlug}`;
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+async function getFacilityPrograms(page, facilitySlugOrUrl) {
+  const facilityUrl = facilitySlugOrUrl.startsWith('http')
+    ? facilitySlugOrUrl
+    : `${BASE_URL}/f/${facilitySlugOrUrl}`;
+  // For subdomain facilities, program links are relative to the subdomain origin
+  const facilityOrigin = new URL(facilityUrl).origin;
+
+  await page.goto(facilityUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(1500);
 
-  const programs = await page.evaluate((baseUrl) => {
+  const programs = await page.evaluate((origin) => {
     const links = Array.from(document.querySelectorAll('a[href*="/programs/"]'));
     return links
       .filter(a => a.innerText.toLowerCase().includes('pickleball'))
@@ -62,10 +69,10 @@ async function getFacilityPrograms(page, facilitySlug) {
         const name = titleLines.slice(0, 2).join(' — ');
         return {
           name,
-          url: a.href.startsWith('http') ? a.href : baseUrl + a.getAttribute('href'),
+          url: a.href.startsWith('http') ? a.href : origin + a.getAttribute('href'),
         };
       });
-  }, BASE_URL);
+  }, facilityOrigin);
 
   // Deduplicate by URL
   const seen = new Set();
@@ -155,12 +162,13 @@ export async function scrapePlayByPoint(facilities, dateFrom, dateTo) {
     const page = await context.newPage();
 
     for (const facility of pbpFacilities) {
-      console.error(`[playbypoint] Scanning facility: ${facility.name} (${facility.slug})`);
+      const facilityRef = facility.url ?? facility.slug;
+      console.error(`[playbypoint] Scanning facility: ${facility.name} (${facilityRef})`);
       let programs;
       try {
-        programs = await getFacilityPrograms(page, facility.slug);
+        programs = await getFacilityPrograms(page, facilityRef);
       } catch (err) {
-        console.error(`[playbypoint] Failed to load facility ${facility.slug}: ${err.message}`);
+        console.error(`[playbypoint] Failed to load facility ${facilityRef}: ${err.message}`);
         continue;
       }
       console.error(`[playbypoint] Found ${programs.length} pickleball programs`);

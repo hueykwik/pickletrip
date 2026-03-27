@@ -2,7 +2,10 @@ export interface PlayByPointFacility {
   source: 'playbypoint';
   name: string;
   city: string;
-  slug: string;
+  /** Standard facility slug — resolves to app.playbypoint.com/f/{slug} */
+  slug?: string;
+  /** Full URL for branded/subdomain facilities e.g. https://piklla.playbypoint.com */
+  url?: string;
 }
 
 export interface CourtReserveFacility {
@@ -22,17 +25,53 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
   'greater-los-angeles': {
     label: 'Greater Los Angeles Area',
     facilities: [
-      {
-        source: 'playbypoint',
-        name: 'West Hollywood Park',
-        city: 'West Hollywood',
-        slug: 'west-hollywood-park-tennis-courts',
-      },
+      // West Hollywood
       {
         source: 'playbypoint',
         name: 'Plummer Park',
         city: 'West Hollywood',
         slug: 'plummer-park',
+      },
+      // Los Angeles
+      {
+        source: 'playbypoint',
+        name: 'PIKL Los Angeles',
+        city: 'Los Angeles',
+        url: 'https://piklla.playbypoint.com',
+      },
+      {
+        source: 'playbypoint',
+        name: 'Project Pickleball',
+        city: 'Los Angeles',
+        url: 'https://projectpickleball.playbypoint.com',
+      },
+      // Westchester / Playa Del Rey
+      {
+        source: 'playbypoint',
+        name: 'Westchester Playa Pickleball',
+        city: 'Los Angeles',
+        url: 'https://westchesterpickleball.playbypoint.com',
+      },
+      // Westwood
+      {
+        source: 'playbypoint',
+        name: 'Westwood Pickleball Center',
+        city: 'Westwood',
+        url: 'https://westwoodpbcenter.playbypoint.com',
+      },
+      // Santa Monica
+      {
+        source: 'playbypoint',
+        name: 'Santa Monica Pickleball Center',
+        city: 'Santa Monica',
+        url: 'https://santamonicapickleball.playbypoint.com',
+      },
+      // Beverly Hills
+      {
+        source: 'playbypoint',
+        name: 'La Cienega Tennis Center',
+        city: 'Beverly Hills',
+        url: 'https://beverlyhillslctc.playbypoint.com',
       },
       // TODO: Add California Smash (El Segundo) once CourtReserve facility ID is confirmed
     ],

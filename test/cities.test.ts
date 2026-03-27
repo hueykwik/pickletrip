@@ -1,26 +1,28 @@
 import { describe, it, expect } from 'vitest';
 import { resolveFacilities, resolveMetroName } from '../lib/cities';
 
+const LA_FACILITY_COUNT = 7;
+
 describe('resolveFacilities', () => {
-  it('returns 2 facilities for "west hollywood"', () => {
+  it(`returns ${LA_FACILITY_COUNT} facilities for "west hollywood"`, () => {
     const facilities = resolveFacilities('west hollywood');
-    expect(facilities).toHaveLength(2);
+    expect(facilities).toHaveLength(LA_FACILITY_COUNT);
     expect(facilities.every(f => f.source === 'playbypoint')).toBe(true);
   });
 
-  it('returns 2 facilities for alias "la"', () => {
+  it(`returns ${LA_FACILITY_COUNT} facilities for alias "la"`, () => {
     const facilities = resolveFacilities('la');
-    expect(facilities).toHaveLength(2);
+    expect(facilities).toHaveLength(LA_FACILITY_COUNT);
   });
 
-  it('returns 2 facilities for alias "weho"', () => {
+  it(`returns ${LA_FACILITY_COUNT} facilities for alias "weho"`, () => {
     const facilities = resolveFacilities('weho');
-    expect(facilities).toHaveLength(2);
+    expect(facilities).toHaveLength(LA_FACILITY_COUNT);
   });
 
-  it('returns 2 facilities for "el segundo" (interim WeHo behavior)', () => {
+  it(`returns ${LA_FACILITY_COUNT} facilities for "el segundo" (interim WeHo behavior)`, () => {
     const facilities = resolveFacilities('el segundo');
-    expect(facilities).toHaveLength(2);
+    expect(facilities).toHaveLength(LA_FACILITY_COUNT);
   });
 
   it('returns [] for unknown city "timbuktu"', () => {
@@ -32,11 +34,11 @@ describe('resolveFacilities', () => {
   });
 
   it('is case-insensitive: "West Hollywood" → same as "west hollywood"', () => {
-    expect(resolveFacilities('West Hollywood')).toHaveLength(2);
+    expect(resolveFacilities('West Hollywood')).toHaveLength(LA_FACILITY_COUNT);
   });
 
   it('trims whitespace: "  LA  " → same as "la"', () => {
-    expect(resolveFacilities('  LA  ')).toHaveLength(2);
+    expect(resolveFacilities('  LA  ')).toHaveLength(LA_FACILITY_COUNT);
   });
 });
 
