@@ -56,11 +56,32 @@ describe('resolveMetroName', () => {
     expect(resolveMetroName('el segundo')).toBe('Greater Los Angeles Area');
   });
 
+  it('returns "Honolulu" for "honolulu"', () => {
+    expect(resolveMetroName('honolulu')).toBe('Honolulu');
+  });
+
+  it('returns "Honolulu" for alias "oahu"', () => {
+    expect(resolveMetroName('oahu')).toBe('Honolulu');
+  });
+
   it('returns null for unknown city "timbuktu"', () => {
     expect(resolveMetroName('timbuktu')).toBeNull();
   });
 
   it('returns null for empty string', () => {
     expect(resolveMetroName('')).toBeNull();
+  });
+});
+
+describe('resolveFacilities (Honolulu)', () => {
+  it('returns 1 facility for "honolulu"', () => {
+    const facilities = resolveFacilities('honolulu');
+    expect(facilities).toHaveLength(1);
+    expect(facilities[0].name).toBe('Pickles at Forté');
+    expect(facilities[0].source).toBe('courtreserve');
+  });
+
+  it('returns facilities for alias "oahu"', () => {
+    expect(resolveFacilities('oahu')).toHaveLength(1);
   });
 });
