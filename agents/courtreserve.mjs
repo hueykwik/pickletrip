@@ -268,8 +268,13 @@ if (process.argv[1].endsWith('courtreserve.mjs')) {
   const dateTo = new Date();
   dateTo.setDate(dateTo.getDate() + 7);
 
-  console.error(`[courtreserve] No CourtReserve facilities configured yet — add them to lib/cities.ts`);
-  const games = await scrapeCourtReserve([], dateFrom, dateTo);
+  const testFacilities = [
+    // Add a CourtReserve facility with a public Events/Index page here to test
+    // e.g.: { source: 'courtreserve', name: 'Example Club', city: 'Example City', url: 'https://app.courtreserve.com/Online/Events/Index/XXXXX' },
+  ];
+
+  console.error(`[courtreserve] Searching Honolulu, ${dateFrom.toDateString()} – ${dateTo.toDateString()}`);
+  const games = await scrapeCourtReserve(testFacilities, dateFrom, dateTo);
   console.log(JSON.stringify(games, null, 2));
   console.error(`\n[courtreserve] Total: ${games.length} games found`);
 }

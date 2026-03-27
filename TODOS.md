@@ -2,8 +2,9 @@
 
 ## CourtReserve Agent
 
-- **CourtReserve scraper not returning results for West Hollywood searches**
+- **Find CourtReserve facilities with public open play events for LA and Honolulu**
   **Priority:** P1
-  CourtReserve queries for the LA metro (California Smash, El Segundo) return no games. Investigate selector and navigation issues in `agents/courtreserve.mjs` — the scraper may be hitting Cloudflare, using wrong selectors for the Events/Index page, or the date filtering logic may be broken. California Smash was just added (facility ID 16314) so this hasn't been validated end-to-end yet.
+  California Smash (El Segundo, ID 16314) and Pickles at Forté (Honolulu, ID 13816) are members-only court-booking clubs — their CourtReserve portals only expose `PublicBookings/Index` (court reservations by the hour), not `Events/Index` (open play sessions). The scraper requires `Events/Index` pages. Both were removed from `lib/cities.ts`. Need to find alternative facilities in these cities that do have public open play events on CourtReserve. For Honolulu specifically, check venues like YMCA, public parks using CourtReserve, or open play clubs. For LA/El Segundo, check whether California Smash offers open play through a different booking path or find another El Segundo venue.
 
 ## Completed
+

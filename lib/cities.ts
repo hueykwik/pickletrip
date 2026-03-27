@@ -73,24 +73,6 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         city: 'Beverly Hills',
         url: 'https://beverlyhillslctc.playbypoint.com',
       },
-      // El Segundo
-      {
-        source: 'courtreserve',
-        name: 'California Smash',
-        city: 'El Segundo',
-        url: 'https://app.courtreserve.com/Online/Events/Index/16314',
-      },
-    ],
-  },
-  'honolulu': {
-    label: 'Honolulu',
-    facilities: [
-      {
-        source: 'courtreserve',
-        name: 'Pickles at Forté',
-        city: 'Honolulu',
-        url: 'https://app.courtreserve.com/Online/Events/Index/13816',
-      },
     ],
   },
 };
@@ -111,10 +93,6 @@ const METRO_ALIASES: Record<string, string> = {
   'santa monica': 'greater-los-angeles',
   'culver city': 'greater-los-angeles',
   'el segundo': 'greater-los-angeles',
-  // Honolulu
-  'honolulu': 'honolulu',
-  'oahu': 'honolulu',
-  'hawaii': 'honolulu',
 };
 
 /**
