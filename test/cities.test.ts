@@ -62,4 +62,45 @@ describe('resolveMetroName', () => {
   it('returns null for empty string', () => {
     expect(resolveMetroName('')).toBeNull();
   });
+
+  it('returns "Honolulu, HI" for "honolulu"', () => {
+    expect(resolveMetroName('honolulu')).toBe('Honolulu, HI');
+  });
+
+  it('returns "Honolulu, HI" for alias "oahu"', () => {
+    expect(resolveMetroName('oahu')).toBe('Honolulu, HI');
+  });
+
+  it('returns "Honolulu, HI" for alias "hawaii"', () => {
+    expect(resolveMetroName('hawaii')).toBe('Honolulu, HI');
+  });
+});
+
+const HONOLULU_FACILITY_COUNT = 2;
+
+describe('resolveFacilities — Honolulu', () => {
+  it(`returns ${HONOLULU_FACILITY_COUNT} facilities for "honolulu"`, () => {
+    const facilities = resolveFacilities('honolulu');
+    expect(facilities).toHaveLength(HONOLULU_FACILITY_COUNT);
+  });
+
+  it(`returns ${HONOLULU_FACILITY_COUNT} facilities for alias "oahu"`, () => {
+    expect(resolveFacilities('oahu')).toHaveLength(HONOLULU_FACILITY_COUNT);
+  });
+
+  it(`returns ${HONOLULU_FACILITY_COUNT} facilities for alias "hawaii"`, () => {
+    expect(resolveFacilities('hawaii')).toHaveLength(HONOLULU_FACILITY_COUNT);
+  });
+
+  it('includes a forte source', () => {
+    const facilities = resolveFacilities('honolulu');
+    expect(facilities.some(f => f.source === 'forte')).toBe(true);
+  });
+
+  it('includes a meetup source with groupUrlname', () => {
+    const facilities = resolveFacilities('honolulu');
+    const meetup = facilities.find(f => f.source === 'meetup');
+    expect(meetup).toBeDefined();
+    expect((meetup as { groupUrlname: string }).groupUrlname).toBe('oahu-pickleball-association');
+  });
 });
