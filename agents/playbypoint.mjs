@@ -57,22 +57,45 @@ async function getFacilityPrograms(page, facilitySlugOrUrl) {
   await page.goto(facilityUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(1500);
 
-  const programs = await page.evaluate((origin) => {
-    const links = Array.from(document.querySelectorAll('a[href*="/programs/"]'));
-    return links
-      .filter(a => a.innerText.toLowerCase().includes('pickleball'))
-      .map(a => {
-        // Extract just the program title — first non-empty line before "M T W T F S S"
-        const lines = a.innerText.split('\n').map(l => l.trim()).filter(Boolean);
-        const titleLines = lines.filter(l => !/^[MTWFS]$/.test(l) && l !== 'View Details');
-        // Usually: lines[0] = category, lines[1] = program name, lines[2] = facility name
-        const name = titleLines.slice(0, 2).join(' — ');
-        return {
-          name,
-          url: a.href.startsWith('http') ? a.href : origin + a.getAttribute('href'),
-        };
-      });
+  // Phase 1: collect direct program links + listing-page links from facility homepage
+  const { directLinks, listingPageUrls } = await page.evaluate((origin) => {
+    const allLinks = Array.from(document.querySelectorAll('a[href]'));
+    const direct = [];
+    const listing = [];
+    for (const a of allLinks) {
+      const href = a.getAttribute('href') || '';
+      if (href.includes('/programs/')) {
+        direct.push({ text: a.innerText.trim().slice(0, 200), href: a.href.startsWith('http') ? a.href : origin + href });
+      } else if (href.includes('/programs?')) {
+        listing.push(a.href.startsWith('http') ? a.href : origin + href);
+      }
+    }
+    return { directLinks: direct, listingPageUrls: [...new Set(listing)] };
   }, facilityOrigin);
+
+  // Phase 2: for each listing page, navigate and scrape individual program links
+  const allLinks = [...directLinks];
+  for (const listingUrl of listingPageUrls) {
+    await page.goto(listingUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(1500);
+    const found = await page.evaluate((origin) => {
+      return Array.from(document.querySelectorAll('a[href*="/programs/"]')).map(a => ({
+        text: a.innerText.trim().slice(0, 200),
+        href: a.href.startsWith('http') ? a.href : origin + a.getAttribute('href'),
+      }));
+    }, facilityOrigin);
+    allLinks.push(...found);
+  }
+
+  const programs = allLinks
+    .filter(l => l.text.toLowerCase().includes('pickleball'))
+    .map(l => {
+      const lines = l.text.split('\n').map(s => s.trim()).filter(Boolean);
+      const titleLines = lines.filter(s => !/^[MTWFS]$/.test(s) && s !== 'View Details');
+      // Usually: lines[0] = category, lines[1] = program name, lines[2] = facility name
+      const name = titleLines.slice(0, 2).join(' — ');
+      return { name, url: l.href };
+    });
 
   // Deduplicate by URL
   const seen = new Set();
@@ -200,6 +223,10 @@ if (process.argv[1].endsWith('playbypoint.mjs')) {
   const testFacilities = [
     { source: 'playbypoint', name: 'West Hollywood Park', city: 'West Hollywood', slug: 'west-hollywood-park-tennis-courts' },
     { source: 'playbypoint', name: 'Plummer Park', city: 'West Hollywood', slug: 'plummer-park' },
+    { source: 'playbypoint', name: 'PIKL Los Angeles', city: 'Los Angeles', url: 'https://piklla.playbypoint.com' },
+    { source: 'playbypoint', name: 'Westchester Playa Pickleball', city: 'Los Angeles', url: 'https://westchesterpickleball.playbypoint.com' },
+    { source: 'playbypoint', name: 'Westwood Pickleball Center', city: 'Westwood', url: 'https://westwoodpbcenter.playbypoint.com' },
+    { source: 'playbypoint', name: 'Santa Monica Pickleball Center', city: 'Santa Monica', url: 'https://santamonicapickleball.playbypoint.com' },
   ];
 
   console.error(`[playbypoint] Searching West Hollywood, ${dateFrom.toDateString()} – ${dateTo.toDateString()}`);
