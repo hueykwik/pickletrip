@@ -1,4 +1,50 @@
-* { box-sizing: border-box; }
+:root {
+  --color-bg:            #f8fafc;
+  --color-surface:       #ffffff;
+  --color-surface-2:     #f1f5f9;
+  --color-border:        #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  --color-text:          #0f172a;
+  --color-muted:         #64748b;
+  --color-faint:         #94a3b8;
+
+  --color-accent:        #0d9488;
+  --color-accent-hover:  #0f766e;
+  --color-accent-light:  #f0fdfa;
+
+  --color-open-bg:       #dcfce7;
+  --color-open-text:     #15803d;
+  --color-full-bg:       #fee2e2;
+  --color-full-text:     #b91c1c;
+  --color-level-bg:      #dbeafe;
+  --color-level-text:    #1e40af;
+
+  --color-warn-bg:       #fffbeb;
+  --color-warn-border:   #fde68a;
+  --color-warn-text:     #92400e;
+
+  --font-ui:   var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 @keyframes spin {
   to { transform: rotate(360deg); }
@@ -6,6 +52,6 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 0.75rem;
 }
