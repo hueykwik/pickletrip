@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import { scrapePlayByPoint } from '@/agents/playbypoint.mjs';
 import { scrapeCourtReserve } from '@/agents/courtreserve.mjs';
+import { scrapeForte } from '@/agents/forte.mjs';
+import { scrapeMeetup } from '@/agents/meetup.mjs';
 import { resolveFacilities, resolveMetroName, type FacilityConfig } from '@/lib/cities';
 import type { Game } from '@/lib/types';
 
@@ -38,6 +40,11 @@ export async function POST(req: NextRequest) {
 
   const from = new Date(dateFrom);
   const to = new Date(dateTo);
+
+  if (isNaN(from.getTime()) || isNaN(to.getTime())) {
+    return new Response('Invalid date format', { status: 400 });
+  }
+
   // Set to end of day so the dateTo date is inclusive
   to.setHours(23, 59, 59, 999);
 
@@ -49,15 +56,22 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       }
 
-      // Emit metro label first — UI shows it immediately before game cards stream in
-      emit({ metroName });
+      // Derive which sources are active for this metro from the facilities list
+      const activeSources = [...new Set(facilities.map(f => f.source))];
+
+      // Emit metro label + active sources so the UI only shows relevant agents
+      emit({ metroName, activeSources });
 
       let total = 0;
 
-      const sources: Array<{ source: string; fn: ScrapeFn }> = [
+      const allSources: Array<{ source: string; fn: ScrapeFn }> = [
         { source: 'playbypoint', fn: scrapePlayByPoint as ScrapeFn },
         { source: 'courtreserve', fn: scrapeCourtReserve as ScrapeFn },
+        { source: 'forte', fn: scrapeForte as ScrapeFn },
+        { source: 'meetup', fn: scrapeMeetup as ScrapeFn },
       ];
+
+      const sources = allSources.filter(s => (activeSources as string[]).includes(s.source));
 
       await Promise.all(sources.map(async ({ source, fn }) => {
         try {
