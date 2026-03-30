@@ -15,7 +15,21 @@ export interface CourtReserveFacility {
   url: string;
 }
 
-export type FacilityConfig = PlayByPointFacility | CourtReserveFacility;
+export interface ForteFacility {
+  source: 'forte';
+  name: string;
+  city: string;
+}
+
+export interface MeetupFacility {
+  source: 'meetup';
+  name: string;
+  city: string;
+  /** Meetup group URL name, e.g. "oahu-pickleball-association" */
+  groupUrlname: string;
+}
+
+export type FacilityConfig = PlayByPointFacility | CourtReserveFacility | ForteFacility | MeetupFacility;
 
 /**
  * Metro areas: each metro maps to a human-readable label and a list of facilities.
@@ -75,6 +89,22 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
       },
     ],
   },
+  'honolulu': {
+    label: 'Honolulu, HI',
+    facilities: [
+      {
+        source: 'forte',
+        name: 'Pickles at Forté',
+        city: 'Honolulu',
+      },
+      {
+        source: 'meetup',
+        name: 'Oahu Pickleball Association',
+        city: 'Honolulu',
+        groupUrlname: 'oahu-pickleball-association',
+      },
+    ],
+  },
 };
 
 /**
@@ -93,6 +123,10 @@ const METRO_ALIASES: Record<string, string> = {
   'santa monica': 'greater-los-angeles',
   'culver city': 'greater-los-angeles',
   'el segundo': 'greater-los-angeles',
+  // Honolulu
+  'honolulu': 'honolulu',
+  'oahu': 'honolulu',
+  'hawaii': 'honolulu',
 };
 
 /**
