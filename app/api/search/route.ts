@@ -3,6 +3,7 @@ import { scrapePlayByPoint } from '@/agents/playbypoint.mjs';
 import { scrapeCourtReserve } from '@/agents/courtreserve.mjs';
 import { scrapeForte } from '@/agents/forte.mjs';
 import { scrapeMeetup } from '@/agents/meetup.mjs';
+import { scrapePodPlay } from '@/agents/podplay.mjs';
 import { resolveFacilities, resolveMetroName, type FacilityConfig } from '@/lib/cities';
 import * as cache from '@/lib/cache';
 import type { Game } from '@/lib/types';
@@ -93,6 +94,7 @@ export async function POST(req: NextRequest) {
     { source: 'courtreserve', fn: scrapeCourtReserve as ScrapeFn },
     { source: 'forte', fn: scrapeForte as ScrapeFn },
     { source: 'meetup', fn: scrapeMeetup as ScrapeFn },
+    { source: 'podplay', fn: scrapePodPlay as ScrapeFn },
   ];
 
   const sources = allSources.filter(s => (activeSources as string[]).includes(s.source));

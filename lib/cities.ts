@@ -29,7 +29,17 @@ export interface MeetupFacility {
   groupUrlname: string;
 }
 
-export type FacilityConfig = PlayByPointFacility | CourtReserveFacility | ForteFacility | MeetupFacility;
+export interface PodPlayFacility {
+  source: 'podplay';
+  name: string;
+  city: string;
+  /** Base URL of the PodPlay tenant, e.g. https://bigcitypickle.podplay.app */
+  url: string;
+  /** Area slug — used to build /book/{areaSlug}/{date} */
+  areaSlug: string;
+}
+
+export type FacilityConfig = PlayByPointFacility | CourtReserveFacility | ForteFacility | MeetupFacility | PodPlayFacility;
 
 /**
  * Metro areas: each metro maps to a human-readable label and a list of facilities.
@@ -206,24 +216,57 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
   'chicago': {
     label: 'Chicago, IL',
     facilities: [
-      // Note: Chicago CourtReserve facilities use Events/List, not Events/Index
+      // Big City Pickle and SPF use PodPlay. CourtReserve venues (Pickleball Clubhouse/13168,
+      // Sure Shot/9585, Pickledilly/13337) all redirect to member login — can't be scraped.
+      // BCP Lincoln Yards and South Loop are "Coming soon!" (disabled in the UI).
       {
-        source: 'courtreserve',
-        name: 'Pickleball Clubhouse Chicago',
+        source: 'podplay',
+        name: 'BCP West Loop',
         city: 'Chicago',
-        url: 'https://app.courtreserve.com/Online/Events/List/13168',
+        url: 'https://bigcitypickle.podplay.app',
+        areaSlug: 'bcp-west-loop',
       },
       {
-        source: 'courtreserve',
-        name: 'Sure Shot Pickleball',
-        city: 'Naperville',
-        url: 'https://app.courtreserve.com/Online/Events/List/9585',
+        source: 'podplay',
+        name: 'BCP Fulton Market',
+        city: 'Chicago',
+        url: 'https://bigcitypickle.podplay.app',
+        areaSlug: 'bcp-fulton-market',
       },
       {
-        source: 'courtreserve',
-        name: 'Pickledilly Skokie',
-        city: 'Skokie',
-        url: 'https://app.courtreserve.com/Online/Events/List/13337',
+        source: 'podplay',
+        name: 'BCP Gold Coast',
+        city: 'Chicago',
+        url: 'https://bigcitypickle.podplay.app',
+        areaSlug: 'bcp-gold-coast',
+      },
+      {
+        source: 'podplay',
+        name: 'Chicago Athletic Association',
+        city: 'Chicago',
+        url: 'https://bigcitypickle.podplay.app',
+        areaSlug: 'chicago-athletic-association',
+      },
+      {
+        source: 'podplay',
+        name: 'SPF Lincoln Park',
+        city: 'Chicago',
+        url: 'https://spf.podplay.app',
+        areaSlug: 'lincoln-park',
+      },
+      {
+        source: 'podplay',
+        name: 'SPF All Day',
+        city: 'Chicago',
+        url: 'https://spf.podplay.app',
+        areaSlug: 'spf-all-day',
+      },
+      {
+        source: 'podplay',
+        name: 'SPF The Sport House',
+        city: 'Chicago',
+        url: 'https://spf.podplay.app',
+        areaSlug: 'the-sport-house',
       },
     ],
   },
