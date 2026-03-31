@@ -39,6 +39,15 @@ function toDateStr(d: Date): string {
   return d.toISOString().split('T')[0];
 }
 
+function formatCacheAge(cachedAt: number): string {
+  const ageMs = Date.now() - cachedAt;
+  const mins = Math.floor(ageMs / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  return `${hours}h ago`;
+}
+
 export default function Home() {
   const [city, setCity] = useState('');
   const [dateFrom, setDateFrom] = useState(() => toDateStr(new Date()));
@@ -54,9 +63,10 @@ export default function Home() {
   const [metroName, setMetroName] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
   const [done, setDone] = useState(false);
+  const [cachedAt, setCachedAt] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  async function handleSearch(e: React.FormEvent) {
+  async function handleSearch(e: React.FormEvent, forceRefresh?: boolean) {
     e.preventDefault();
     if (!city || !dateFrom || !dateTo) return;
 
@@ -68,12 +78,13 @@ export default function Home() {
     setAgents([]);
     setSearching(true);
     setDone(false);
+    setCachedAt(null);
 
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ city, dateFrom, dateTo, level: level || undefined }),
+        body: JSON.stringify({ city, dateFrom, dateTo, level: level || undefined, forceRefresh: forceRefresh || undefined }),
         signal: abortRef.current.signal,
       });
 
@@ -98,6 +109,9 @@ export default function Home() {
               setMetroName(payload.metroName);
               if (Array.isArray(payload.activeSources)) {
                 setAgents(payload.activeSources.map((source: string) => ({ source, status: 'searching' as const })));
+              }
+              if (typeof payload.cachedAt === 'number') {
+                setCachedAt(payload.cachedAt);
               }
             }
             if (payload.games) {
@@ -209,8 +223,28 @@ export default function Home() {
       </form>
 
       {metroName && (
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', marginBottom: '0.75rem' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           Showing results for {metroName}
+          {cachedAt && (
+            <>
+              <span style={{ color: 'var(--color-border-strong)' }}>·</span>
+              <span>cached {formatCacheAge(cachedAt)}</span>
+              <button
+                onClick={e => handleSearch(e as unknown as React.FormEvent, true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-accent)',
+                  cursor: 'pointer',
+                  fontSize: '0.8125rem',
+                  padding: 0,
+                  fontFamily: 'var(--font-ui)',
+                }}
+              >
+                ↻ Re-check
+              </button>
+            </>
+          )}
         </p>
       )}
 

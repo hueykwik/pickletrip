@@ -32,5 +32,11 @@
   **Priority:** P3
   `seenEventIds` is reset per-facility while `games` accumulates globally. This is correct but looks asymmetric. Add a comment explaining the design.
 
+## Cache — Future Work
+
+- **Upgrade to SQLite/Turso for cache persistence**
+  **Priority:** P3
+  The current two-layer cache (in-memory Map + `.cache/*.json` files) works well for a single server process but won't scale to multiple instances or serverless deployments. Turso (SQLite at the edge) would give durable, queryable, cross-instance storage with the same low-latency profile. Migration path: keep `lib/cache.ts` interface identical (`get`/`set`/`bust`), swap the file layer for a Turso client. The in-memory Map stays as the L1 layer.
+
 ## Completed
 

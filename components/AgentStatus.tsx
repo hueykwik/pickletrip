@@ -9,7 +9,7 @@ const SOURCE_LABELS: Record<string, string> = {
   playbypoint: 'PlayByPoint',
   courtreserve: 'CourtReserve',
   forte: 'Pickles at Forté',
-  meetup: 'Oahu Pickleball Association',
+  meetup: 'Meetup',
 };
 
 export default function AgentStatus({ agents }: { agents: AgentState[] }) {
