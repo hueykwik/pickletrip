@@ -270,6 +270,48 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
       },
     ],
   },
+  'atlanta': {
+    label: 'Atlanta, GA',
+    facilities: [
+      {
+        source: 'playbypoint',
+        name: 'Sandy Springs Racquet Center',
+        city: 'Sandy Springs',
+        url: 'https://sandyspringstc.playbypoint.com',
+      },
+      {
+        source: 'playbypoint',
+        name: 'Bitsy Grant Tennis Center',
+        city: 'Atlanta',
+        url: 'https://bitsygrant.playbypoint.com',
+      },
+      {
+        source: 'courtreserve',
+        name: 'Atlanta Pickleball Center',
+        city: 'Atlanta',
+        url: 'https://app.courtreserve.com/Online/Events/Index/8777',
+      },
+      {
+        source: 'courtreserve',
+        name: 'Atlanta National Pickleball Club',
+        city: 'Alpharetta',
+        url: 'https://app.courtreserve.com/Online/Events/Index/16024',
+      },
+      {
+        source: 'podplay',
+        name: 'Pickleball Kingdom South Cobb',
+        city: 'Austell',
+        url: 'https://pickleballkingdom.podplay.app',
+        areaSlug: 'south-cobb',
+      },
+      {
+        source: 'meetup',
+        name: 'Atlanta Indoor Pickleball',
+        city: 'Atlanta',
+        groupUrlname: 'atlanta-pickleball',
+      },
+    ],
+  },
   'new-york': {
     label: 'New York, NY',
     facilities: [
@@ -416,6 +458,19 @@ const METRO_ALIASES: Record<string, string> = {
   'evanston': 'chicago',
   'oak park': 'chicago',
   'schaumburg': 'chicago',
+  // Atlanta
+  'atlanta': 'atlanta',
+  'atl': 'atlanta',
+  'buckhead': 'atlanta',
+  'midtown atlanta': 'atlanta',
+  'sandy springs': 'atlanta',
+  'alpharetta': 'atlanta',
+  'marietta': 'atlanta',
+  'decatur': 'atlanta',
+  'roswell': 'atlanta',
+  'dunwoody': 'atlanta',
+  'smyrna': 'atlanta',
+  'austell': 'atlanta',
   // New York
   'new york': 'new-york',
   'nyc': 'new-york',
