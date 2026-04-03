@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
 
       // Store in cache after all scrapers complete
       await cache.set(cacheKey, {
-        metroName,
+        metroName: metroName ?? city,
         activeSources,
         sourceResults,
         cachedAt: Date.now(),

@@ -5,6 +5,7 @@ const SOURCE_LABELS: Record<string, string> = {
   courtreserve: 'CourtReserve',
   forte: 'Pickles at Forté',
   meetup: 'Oahu Pickleball Association',
+  podplay: 'PodPlay',
 };
 
 export default function GameCard({ game }: { game: Game }) {

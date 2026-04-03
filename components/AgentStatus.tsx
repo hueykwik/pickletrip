@@ -10,6 +10,7 @@ const SOURCE_LABELS: Record<string, string> = {
   courtreserve: 'CourtReserve',
   forte: 'Pickles at Forté',
   meetup: 'Meetup',
+  podplay: 'PodPlay',
 };
 
 export default function AgentStatus({ agents }: { agents: AgentState[] }) {

@@ -1,6 +1,6 @@
 export interface Game {
   id: string;
-  source: 'playbypoint' | 'courtreserve' | 'forte' | 'meetup';
+  source: 'playbypoint' | 'courtreserve' | 'forte' | 'meetup' | 'podplay';
   venue: string;
   programName: string;
   date: string;
