@@ -20,10 +20,6 @@
   **Priority:** P2
   Wix sites expose a structured events API (`/_api/wix-one-events-server/events?`). If the Load More button selector breaks (Wix A/B tests UI without warning), use the API directly instead of Playwright pagination. Faster and more reliable.
 
-- **LA search shows "Pickles at Forté: searching" incorrectly**
-  **Priority:** P2
-  `page.tsx` hardcodes the initial agents array as `[playbypoint, courtreserve, forte]`. For LA searches, the Forte agent is initialized even though no Forte facilities exist in that metro. Fix: emit the resolved agent list from the server as the first SSE event, so the client initializes only the relevant agents.
-
 - **DRY: extract shared parse utilities to `lib/parsers.ts`**
   **Priority:** P3
   `parseLevel()` and `formatDate()` are duplicated across `courtreserve.mjs`, `forte.mjs`, `meetup.mjs`, and `playbypoint.mjs`. Each has slightly different logic, which will cause inconsistent level display. A shared `lib/parsers.ts` would fix this and make future agent additions cleaner.
@@ -39,4 +35,8 @@
   The current two-layer cache (in-memory Map + `.cache/*.json` files) works well for a single server process but won't scale to multiple instances or serverless deployments. Turso (SQLite at the edge) would give durable, queryable, cross-instance storage with the same low-latency profile. Migration path: keep `lib/cache.ts` interface identical (`get`/`set`/`bust`), swap the file layer for a Turso client. The in-memory Map stays as the L1 layer.
 
 ## Completed
+
+- **LA search shows "Pickles at Forté: searching" incorrectly**
+  Fixed in v1.1.0.0: API now emits `activeSources` in the first SSE event; client initializes only the agents relevant to the searched metro.
+  **Completed:** v1.1.0.0 (2026-04-03)
 
