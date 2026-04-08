@@ -25,6 +25,59 @@ const AGENT_MAP: Record<string, ScrapeFn> = {
 
 let scraping = false;
 
+async function runScrape(startTime: number) {
+  const metroKeys = getMetroKeys();
+  const dateFrom = todayDateStr();
+  const dateTo = plus14DateStr();
+  const from = new Date(dateFrom);
+  const to = new Date(dateTo);
+  to.setHours(23, 59, 59, 999);
+
+  let totalGames = 0;
+
+  for (const metroKey of metroKeys) {
+    const facilities = resolveFacilities(metroKey);
+    const metroName = resolveMetroName(metroKey);
+    if (facilities.length === 0) continue;
+
+    const cacheKey = `${metroName}|${dateFrom}|${dateTo}`;
+    await cache.bust(cacheKey);
+
+    const activeSources = [...new Set(facilities.map(f => f.source))];
+    const sourceResults: Array<{ source: string; games: Game[] }> = [];
+
+    // Run agents SEQUENTIALLY — one browser at a time
+    for (const source of activeSources) {
+      const fn = AGENT_MAP[source];
+      if (!fn) continue;
+
+      try {
+        console.log(`[scrape] ${metroName} / ${source}: starting`);
+        const games = await fn(facilities, from, to);
+        sourceResults.push({ source, games });
+        console.log(`[scrape] ${metroName} / ${source}: ${games.length} games`);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`[scrape] ${metroName} / ${source} error:`, message);
+        sourceResults.push({ source, games: [] });
+      }
+    }
+
+    const metroGames = sourceResults.reduce((n, r) => n + r.games.length, 0);
+    totalGames += metroGames;
+
+    await cache.set(cacheKey, {
+      metroName: metroName ?? metroKey,
+      activeSources,
+      sourceResults,
+      cachedAt: Date.now(),
+    });
+  }
+
+  const duration = Date.now() - startTime;
+  console.log(`[scrape] Done: ${totalGames} games across ${metroKeys.length} metros in ${duration}ms`);
+}
+
 function todayDateStr(): string {
   return new Date().toISOString().split('T')[0];
 }
@@ -61,81 +114,19 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Return immediately — run scraping in the background
   scraping = true;
   const startTime = Date.now();
 
-  try {
-    const metroKeys = getMetroKeys();
-    const dateFrom = todayDateStr();
-    const dateTo = plus14DateStr();
-    const from = new Date(dateFrom);
-    const to = new Date(dateTo);
-    to.setHours(23, 59, 59, 999);
-
-    let totalGames = 0;
-    const results: Array<{ metro: string; games: number; sources: number; errors: string[] }> = [];
-
-    for (const metroKey of metroKeys) {
-      const facilities = resolveFacilities(metroKey);
-      const metroName = resolveMetroName(metroKey);
-      if (facilities.length === 0) continue;
-
-      const cacheKey = `${metroName}|${dateFrom}|${dateTo}`;
-      await cache.bust(cacheKey);
-
-      const activeSources = [...new Set(facilities.map(f => f.source))];
-      const sourceResults: Array<{ source: string; games: Game[] }> = [];
-      const errors: string[] = [];
-
-      // Run agents SEQUENTIALLY — one browser at a time
-      for (const source of activeSources) {
-        const fn = AGENT_MAP[source];
-        if (!fn) continue;
-
-        try {
-          console.log(`[scrape] ${metroName} / ${source}: starting`);
-          const games = await fn(facilities, from, to);
-          sourceResults.push({ source, games });
-          console.log(`[scrape] ${metroName} / ${source}: ${games.length} games`);
-        } catch (err) {
-          const message = err instanceof Error ? err.message : 'Unknown error';
-          console.error(`[scrape] ${metroName} / ${source} error:`, message);
-          sourceResults.push({ source, games: [] });
-          errors.push(`${source}: ${message}`);
-        }
-      }
-
-      const metroGames = sourceResults.reduce((n, r) => n + r.games.length, 0);
-      totalGames += metroGames;
-
-      await cache.set(cacheKey, {
-        metroName: metroName ?? metroKey,
-        activeSources,
-        sourceResults,
-        cachedAt: Date.now(),
-      });
-
-      results.push({
-        metro: metroName ?? metroKey,
-        games: metroGames,
-        sources: activeSources.length,
-        errors,
-      });
-    }
-
-    const duration = Date.now() - startTime;
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        metros: results.length,
-        totalGames,
-        duration_ms: duration,
-        results,
-      }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
-  } finally {
+  // Fire and forget — don't await
+  runScrape(startTime).catch(err => {
+    console.error('[scrape] Background scrape failed:', err);
+  }).finally(() => {
     scraping = false;
-  }
+  });
+
+  return new Response(
+    JSON.stringify({ ok: true, message: 'Scrape started in background' }),
+    { status: 202, headers: { 'Content-Type': 'application/json' } }
+  );
 }
