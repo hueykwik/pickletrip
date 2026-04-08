@@ -29,6 +29,12 @@ export interface MeetupFacility {
   groupUrlname: string;
 }
 
+export interface HoluaFacility {
+  source: 'holua';
+  name: string;
+  city: string;
+}
+
 export interface PodPlayFacility {
   source: 'podplay';
   name: string;
@@ -39,7 +45,7 @@ export interface PodPlayFacility {
   areaSlug: string;
 }
 
-export type FacilityConfig = PlayByPointFacility | CourtReserveFacility | ForteFacility | MeetupFacility | PodPlayFacility;
+export type FacilityConfig = PlayByPointFacility | CourtReserveFacility | ForteFacility | MeetupFacility | PodPlayFacility | HoluaFacility;
 
 /**
  * Metro areas: each metro maps to a human-readable label and a list of facilities.
@@ -112,6 +118,16 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Oahu Pickleball Association',
         city: 'Honolulu',
         groupUrlname: 'oahu-pickleball-association',
+      },
+    ],
+  },
+  'big-island': {
+    label: 'Big Island, HI',
+    facilities: [
+      {
+        source: 'holua',
+        name: 'Holua Racquet & Paddle',
+        city: 'Kailua-Kona',
       },
     ],
   },
@@ -406,7 +422,16 @@ const METRO_ALIASES: Record<string, string> = {
   // Honolulu
   'honolulu': 'honolulu',
   'oahu': 'honolulu',
-  'hawaii': 'honolulu',
+  // Big Island
+  'big island': 'big-island',
+  'big island hawaii': 'big-island',
+  'kona': 'big-island',
+  'kailua-kona': 'big-island',
+  'kailua kona': 'big-island',
+  'hilo': 'big-island',
+  'waikoloa': 'big-island',
+  'kohala coast': 'big-island',
+  'hawaii island': 'big-island',
   // San Francisco
   'san francisco': 'san-francisco',
   'sf': 'san-francisco',
@@ -516,6 +541,13 @@ export function resolveFacilities(city: string): FacilityConfig[] {
  * Resolve a user-typed city string to the metro display label.
  * Returns null for unknown cities.
  */
+/**
+ * Return all metro keys. Used by the cron pre-scrape endpoint to enumerate metros.
+ */
+export function getMetroKeys(): string[] {
+  return Object.keys(METRO_AREAS);
+}
+
 export function resolveMetroName(city: string): string | null {
   const normalized = city.trim().toLowerCase();
   if (!normalized) return null;

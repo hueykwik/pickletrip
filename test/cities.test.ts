@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveFacilities, resolveMetroName } from '../lib/cities';
+import { resolveFacilities, resolveMetroName, getMetroKeys } from '../lib/cities';
 
 const LA_FACILITY_COUNT = 7;
 
@@ -71,9 +71,6 @@ describe('resolveMetroName', () => {
     expect(resolveMetroName('oahu')).toBe('Honolulu, HI');
   });
 
-  it('returns "Honolulu, HI" for alias "hawaii"', () => {
-    expect(resolveMetroName('hawaii')).toBe('Honolulu, HI');
-  });
 });
 
 const HONOLULU_FACILITY_COUNT = 2;
@@ -88,10 +85,6 @@ describe('resolveFacilities — Honolulu', () => {
     expect(resolveFacilities('oahu')).toHaveLength(HONOLULU_FACILITY_COUNT);
   });
 
-  it(`returns ${HONOLULU_FACILITY_COUNT} facilities for alias "hawaii"`, () => {
-    expect(resolveFacilities('hawaii')).toHaveLength(HONOLULU_FACILITY_COUNT);
-  });
-
   it('includes a forte source', () => {
     const facilities = resolveFacilities('honolulu');
     expect(facilities.some(f => f.source === 'forte')).toBe(true);
@@ -102,5 +95,58 @@ describe('resolveFacilities — Honolulu', () => {
     const meetup = facilities.find(f => f.source === 'meetup');
     expect(meetup).toBeDefined();
     expect((meetup as { groupUrlname: string }).groupUrlname).toBe('oahu-pickleball-association');
+  });
+});
+
+const BIG_ISLAND_FACILITY_COUNT = 1;
+
+describe('resolveFacilities — Big Island', () => {
+  it(`returns ${BIG_ISLAND_FACILITY_COUNT} facility for "big island"`, () => {
+    expect(resolveFacilities('big island')).toHaveLength(BIG_ISLAND_FACILITY_COUNT);
+  });
+
+  it(`returns ${BIG_ISLAND_FACILITY_COUNT} facility for alias "kona"`, () => {
+    expect(resolveFacilities('kona')).toHaveLength(BIG_ISLAND_FACILITY_COUNT);
+  });
+
+  it(`returns ${BIG_ISLAND_FACILITY_COUNT} facility for alias "hilo"`, () => {
+    expect(resolveFacilities('hilo')).toHaveLength(BIG_ISLAND_FACILITY_COUNT);
+  });
+
+  it(`returns ${BIG_ISLAND_FACILITY_COUNT} facility for alias "waikoloa"`, () => {
+    expect(resolveFacilities('waikoloa')).toHaveLength(BIG_ISLAND_FACILITY_COUNT);
+  });
+
+  it('includes a holua source', () => {
+    const facilities = resolveFacilities('big island');
+    expect(facilities.some(f => f.source === 'holua')).toBe(true);
+  });
+
+  it('returns "Big Island, HI" for resolveMetroName("kona")', () => {
+    expect(resolveMetroName('kona')).toBe('Big Island, HI');
+  });
+
+  it('returns "Big Island, HI" for resolveMetroName("big island")', () => {
+    expect(resolveMetroName('big island')).toBe('Big Island, HI');
+  });
+});
+
+describe('getMetroKeys', () => {
+  it('returns an array of metro keys', () => {
+    const keys = getMetroKeys();
+    expect(Array.isArray(keys)).toBe(true);
+    expect(keys.length).toBeGreaterThan(0);
+  });
+
+  it('includes big-island', () => {
+    expect(getMetroKeys()).toContain('big-island');
+  });
+
+  it('includes honolulu', () => {
+    expect(getMetroKeys()).toContain('honolulu');
+  });
+
+  it('includes greater-los-angeles', () => {
+    expect(getMetroKeys()).toContain('greater-los-angeles');
   });
 });

@@ -28,6 +28,16 @@
   **Priority:** P3
   `seenEventIds` is reset per-facility while `games` accumulates globally. This is correct but looks asymmetric. Add a comment explaining the design.
 
+## Deployment — Future Work
+
+- **Per-day cache key redesign for flexible date range matching**
+  **Priority:** P3
+  Current cache key (`metroName|dateFrom|dateTo`) only hits on exact date ranges. Cron pre-warms with a default 14-day range, but custom user searches with different dates miss the cache. A per-day key strategy (`metroName|date`) would let any date range assemble from individual cached days, dramatically improving cache hit rate when multiple users search the same metro with different date windows. Migration path: keep `lib/cache.ts` interface, add a `getRange(metro, from, to)` method that assembles from day-level entries. Deferred until the product has real users with diverse search patterns.
+
+- **GitHub Actions cron + static JSON as alternative deployment architecture**
+  **Priority:** P3
+  If Railway + Playwright proves unreliable or too expensive, an alternative: run scrapers as GitHub Actions (free tier, scheduled cron), write results to a JSON file committed to the repo or hosted in S3/R2, and serve the static results from Vercel ($0). Eliminates Docker, RAM concerns, cron auth, and cache entirely. Tradeoff: two-system architecture, slower iteration, results stale until next GH Actions run. Only pursue if Railway deployment becomes a rabbit hole.
+
 ## Cache — Future Work
 
 - **Upgrade to SQLite/Turso for cache persistence**

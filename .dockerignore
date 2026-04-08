@@ -1,0 +1,8 @@
+node_modules
+.next
+.cache
+.git
+.gstack
+.claude
+*.md
+test/

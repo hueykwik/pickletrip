@@ -210,3 +210,57 @@ describe('parseLevel (meetup)', () => {
   it('returns null for no level info', () =>
     expect(parseLevelMeetup('Sunday Pickleball', '')).toBeNull());
 });
+
+// ─── scrapeHolua ─────────────────────────────────────────────────────────────
+import { scrapeHolua } from '../agents/holua.mjs';
+
+describe('scrapeHolua', () => {
+  it('returns [] for empty facilities', async () => {
+    expect(await scrapeHolua([], new Date(), new Date())).toEqual([]);
+  });
+
+  it('returns [] for non-holua facilities', async () => {
+    const facilities = [{ source: 'meetup' as const, name: 'Test', city: 'Test', groupUrlname: 'test' }];
+    expect(await scrapeHolua(facilities, new Date(), new Date())).toEqual([]);
+  });
+
+  it('generates slots for a single day (Monday)', async () => {
+    // Find next Monday
+    const monday = new Date();
+    while (monday.getDay() !== 1) monday.setDate(monday.getDate() + 1);
+    monday.setHours(0, 0, 0, 0);
+
+    const facilities = [{ source: 'holua' as const, name: 'Holua Racquet & Paddle', city: 'Kailua-Kona' }];
+    const games = await scrapeHolua(facilities, monday, monday);
+
+    // Monday has 2 slots: 8am-12pm and 4pm-9pm
+    expect(games).toHaveLength(2);
+    expect(games[0].source).toBe('holua');
+    expect(games[0].price).toBe('$15');
+    expect(games[0].venue).toBe('Holua Racquet & Paddle');
+  });
+
+  it('generates 0 slots for Saturday (no regular open play)', async () => {
+    const saturday = new Date();
+    while (saturday.getDay() !== 6) saturday.setDate(saturday.getDate() + 1);
+    saturday.setHours(0, 0, 0, 0);
+
+    const facilities = [{ source: 'holua' as const, name: 'Holua Racquet & Paddle', city: 'Kailua-Kona' }];
+    const games = await scrapeHolua(facilities, saturday, saturday);
+    expect(games).toHaveLength(0);
+  });
+
+  it('marks beginner-friendly slots correctly', async () => {
+    // Find next Sunday (has beginner-friendly slots)
+    const sunday = new Date();
+    while (sunday.getDay() !== 0) sunday.setDate(sunday.getDate() + 1);
+    sunday.setHours(0, 0, 0, 0);
+
+    const facilities = [{ source: 'holua' as const, name: 'Holua Racquet & Paddle', city: 'Kailua-Kona' }];
+    const games = await scrapeHolua(facilities, sunday, sunday);
+
+    expect(games).toHaveLength(2);
+    expect(games.every(g => g.level === 'Beginner-friendly')).toBe(true);
+    expect(games.every(g => g.programName.includes('Beginner-friendly'))).toBe(true);
+  });
+});
