@@ -10,9 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install dependencies
+# Install all dependencies (dev deps needed for build)
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # Install Playwright Chromium browser
 RUN npx playwright install chromium
@@ -20,6 +20,9 @@ RUN npx playwright install chromium
 # Copy source and build
 COPY . .
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --omit=dev
 
 EXPOSE 3000
 
