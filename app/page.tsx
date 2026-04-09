@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import GameCard from '@/components/GameCard';
 import AgentStatus from '@/components/AgentStatus';
 import type { Game } from '@/lib/types';
+import { getMetroOptions } from '@/lib/cities';
 
 interface AgentState {
   source: string;
@@ -11,6 +12,8 @@ interface AgentState {
   count?: number;
   error?: string;
 }
+
+const METROS = getMetroOptions();
 
 const LEVELS = [
   { value: '', label: 'Any level' },
@@ -33,6 +36,18 @@ function parseGameDate(dateStr: string): Date {
     parsed.setFullYear(now.getFullYear() + 1);
   }
   return parsed;
+}
+
+function parseStartMinutes(time: string): number {
+  // Parse "5:30 PM", "08:00 AM – 12:00 PM", "5:30 PM - 7:00 PM" → minutes since midnight
+  const match = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return 0;
+  let h = parseInt(match[1], 10);
+  const m = parseInt(match[2], 10);
+  const period = match[3].toUpperCase();
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  return h * 60 + m;
 }
 
 function toDateStr(d: Date): string {
@@ -119,7 +134,9 @@ export default function Home() {
                 const combined = [...prev, ...payload.games];
                 return combined.sort((a, b) => {
                   try {
-                    return parseGameDate(a.date).getTime() - parseGameDate(b.date).getTime();
+                    const dateDiff = parseGameDate(a.date).getTime() - parseGameDate(b.date).getTime();
+                    if (dateDiff !== 0) return dateDiff;
+                    return parseStartMinutes(a.time) - parseStartMinutes(b.time);
                   } catch {
                     return 0;
                   }
@@ -176,14 +193,15 @@ export default function Home() {
         <div className="form-row">
           <label style={labelStyle}>
             City
-            <input
+            <select
               style={inputStyle}
-              type="text"
-              placeholder="West Hollywood"
               value={city}
               onChange={e => setCity(e.target.value)}
               required
-            />
+            >
+              <option value="">Select a city</option>
+              {METROS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
           </label>
           <label style={labelStyle}>
             Arriving

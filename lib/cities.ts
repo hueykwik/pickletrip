@@ -550,6 +550,16 @@ export function getMetroKeys(): string[] {
   return Object.keys(METRO_AREAS);
 }
 
+/**
+ * Return metro options for the city dropdown: { value: metroKey, label: display name }.
+ * Sorted alphabetically by label.
+ */
+export function getMetroOptions(): Array<{ value: string; label: string }> {
+  return Object.entries(METRO_AREAS)
+    .map(([key, metro]) => ({ value: key, label: metro.label }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+}
+
 export function resolveMetroName(city: string): string | null {
   const normalized = city.trim().toLowerCase();
   if (!normalized) return null;
