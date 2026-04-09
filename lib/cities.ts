@@ -532,6 +532,8 @@ const METRO_ALIASES: Record<string, string> = {
 export function resolveFacilities(city: string): FacilityConfig[] {
   const normalized = city.trim().toLowerCase();
   if (!normalized) return [];
+  // Check direct metro key first (used by cron), then aliases (used by user search)
+  if (METRO_AREAS[normalized]) return METRO_AREAS[normalized].facilities;
   const metroKey = METRO_ALIASES[normalized];
   if (!metroKey) return [];
   return METRO_AREAS[metroKey]?.facilities ?? [];
@@ -551,6 +553,8 @@ export function getMetroKeys(): string[] {
 export function resolveMetroName(city: string): string | null {
   const normalized = city.trim().toLowerCase();
   if (!normalized) return null;
+  // Check direct metro key first (used by cron), then aliases (used by user search)
+  if (METRO_AREAS[normalized]) return METRO_AREAS[normalized].label;
   const metroKey = METRO_ALIASES[normalized];
   if (!metroKey) return null;
   return METRO_AREAS[metroKey]?.label ?? null;
