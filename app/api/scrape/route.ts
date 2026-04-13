@@ -23,7 +23,18 @@ const AGENT_MAP: Record<string, ScrapeFn> = {
   holua: scrapeHolua as ScrapeFn,
 };
 
-let scraping = false;
+let scrapeStartedAt = 0;
+const SCRAPE_TIMEOUT_MS = 30 * 60 * 1000; // 30 min — if a scrape takes longer, assume it died
+
+function isScraping(): boolean {
+  if (scrapeStartedAt === 0) return false;
+  if (Date.now() - scrapeStartedAt > SCRAPE_TIMEOUT_MS) {
+    console.log('[scrape] Previous scrape timed out, releasing lock');
+    scrapeStartedAt = 0;
+    return false;
+  }
+  return true;
+}
 
 async function runScrape(startTime: number) {
   const metroKeys = getMetroKeys();
@@ -106,8 +117,8 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Lock guard
-  if (scraping) {
+  // Lock guard with timeout
+  if (isScraping()) {
     return new Response(
       JSON.stringify({ error: 'Scrape already in progress' }),
       { status: 409, headers: { 'Content-Type': 'application/json' } }
@@ -115,14 +126,14 @@ export async function GET(req: NextRequest) {
   }
 
   // Return immediately — run scraping in the background
-  scraping = true;
   const startTime = Date.now();
+  scrapeStartedAt = startTime;
 
   // Fire and forget — don't await
   runScrape(startTime).catch(err => {
     console.error('[scrape] Background scrape failed:', err);
   }).finally(() => {
-    scraping = false;
+    scrapeStartedAt = 0;
   });
 
   return new Response(
