@@ -302,18 +302,6 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         url: 'https://bitsygrant.playbypoint.com',
       },
       {
-        source: 'courtreserve',
-        name: 'Atlanta Pickleball Center',
-        city: 'Atlanta',
-        url: 'https://app.courtreserve.com/Online/Events/Index/8777',
-      },
-      {
-        source: 'courtreserve',
-        name: 'Atlanta National Pickleball Club',
-        city: 'Alpharetta',
-        url: 'https://app.courtreserve.com/Online/Events/Index/16024',
-      },
-      {
         source: 'podplay',
         name: 'Pickleball Kingdom South Cobb',
         city: 'Austell',

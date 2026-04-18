@@ -2,6 +2,10 @@
 
 ## CourtReserve Agent
 
+- **Atlanta Pickleball Center (8777) and Atlanta National Pickleball Club (16024) — events not publicly scrapable**
+  **Priority:** P3 (do not re-add without solving auth)
+  Both orgs were removed from `lib/cities.ts` Atlanta config in v1.1.0.2 after a live Playwright probe confirmed there's no public Events/Index page. APC (8777) → bare login wall at `/Online/Reservations/Bookings/8777`. ANPC (16024) → court-booking widget at `/online/publicbookings/16024` with zero event listings (members must log in to see events). Don't re-add unless we (a) build auth support and store creds, or (b) find their event calendar published on their own websites (atlanta-pickleball.com, anpc.us) in a scrapable form.
+
 - **Re-investigate California Smash (El Segundo, ID 16314) for Events/Index access**
   **Priority:** P1
   California Smash was removed from `lib/cities.ts` when its Events/Index page appeared inaccessible. However, web research confirms they do run scheduled open play events ($15 morning open play M–F 9am–Noon, $29 beginner open play) registered via CourtReserve. Their own website (calismash.com) links to `Events/Details/16314/...` detail pages. The Events/Index page may require a logged-in session or have a different URL pattern. Possible approaches: (1) check if `https://app.courtreserve.com/Online/Events/Index/16314` is accessible when navigated to directly (our previous test may have been blocked by Cloudflare during scraping), or (2) scrape event detail links from calismash.com itself since their site embeds CourtReserve event widgets.
