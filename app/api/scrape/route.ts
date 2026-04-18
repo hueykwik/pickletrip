@@ -36,6 +36,10 @@ function isScraping(): boolean {
   return true;
 }
 
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function runScrape(startTime: number) {
   const metroKeys = getMetroKeys();
   const dateFrom = todayDateStr();
@@ -46,10 +50,16 @@ async function runScrape(startTime: number) {
 
   let totalGames = 0;
 
-  for (const metroKey of metroKeys) {
+  for (let i = 0; i < metroKeys.length; i++) {
+    const metroKey = metroKeys[i];
     const facilities = resolveFacilities(metroKey);
     const metroName = resolveMetroName(metroKey);
     if (facilities.length === 0) continue;
+
+    // Pause between metros to let the OS reclaim memory/processes
+    if (i > 0) await sleep(5000);
+
+    console.log(`[scrape] --- ${metroName} (${i + 1}/${metroKeys.length}) ---`);
 
     const cacheKey = `${metroName}|${dateFrom}|${dateTo}`;
     await cache.bust(cacheKey);
@@ -72,6 +82,9 @@ async function runScrape(startTime: number) {
         console.error(`[scrape] ${metroName} / ${source} error:`, message);
         sourceResults.push({ source, games: [] });
       }
+
+      // Brief pause between agents to let Chromium fully exit
+      await sleep(2000);
     }
 
     const metroGames = sourceResults.reduce((n, r) => n + r.games.length, 0);
