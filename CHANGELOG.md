@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.0.2] - 2026-04-17
+
+### Removed
+- Atlanta CourtReserve facilities (Atlanta Pickleball Center, Atlanta National Pickleball Club). Live Playwright probe confirmed neither org publishes events publicly: APC's URL is a bare login wall; ANPC's is a court-booking widget with no event listings. Their events live behind member auth, which the scraper doesn't support. Atlanta now searches PlayByPoint (Sandy Springs Racquet Center, Bitsy Grant Tennis Center) + PodPlay (Pickleball Kingdom South Cobb) + Meetup. Removed false "searching... 0 results" UX. See TODOS.md for details.
+
 ## [1.1.0.1] - 2026-04-17
 
 ### Fixed
