@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0.1] - 2026-04-17
+
+### Fixed
+- **Atlanta (and other 3+ source metros) returning no results on Railway**: live search now runs scrapers sequentially with a 2-second pause between agents. The previous `Promise.all` over 3 Playwright agents (PlayByPoint + CourtReserve + PodPlay) exceeded Railway's 1 GB RAM and crashed the container before any results could be returned. First search per metro now takes ~3 minutes cold; subsequent searches in the cache window are instant.
+
+### Changed
+- Cache TTL bumped from 4 hours to 24 hours. Most pickleball events are scheduled days in advance, and the in-app refresh button covers urgency.
+
+### Removed
+- `/api/scrape` cron pre-warm route. Cache now populates on-demand via live searches; the cron route was never scheduled on Railway and added complexity (auth, lock, sequential orchestration) for no benefit. `CRON_SECRET` env var can be deleted from Railway.
+
 ## [1.1.0.0] - 2026-04-03
 
 ### Added
