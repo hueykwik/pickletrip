@@ -14,6 +14,10 @@ export const maxDuration = 300; // 5 minutes
 
 type ScrapeFn = (facilities: FacilityConfig[], dateFrom: Date, dateTo: Date) => Promise<Game[]>;
 
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export async function POST(req: NextRequest) {
   const { city, dateFrom, dateTo, forceRefresh } = await req.json();
 
@@ -112,7 +116,10 @@ export async function POST(req: NextRequest) {
       let total = 0;
       const sourceResults: Array<{ source: string; games: Game[] }> = [];
 
-      await Promise.all(sources.map(async ({ source, fn }) => {
+      // Run scrapers SEQUENTIALLY — one Playwright browser at a time.
+      // Parallel (Promise.all) OOMs Railway 1GB on metros with 3+ Playwright sources.
+      for (let i = 0; i < sources.length; i++) {
+        const { source, fn } = sources[i];
         try {
           const games = await fn(facilities, from, to);
           sourceResults.push({ source, games });
@@ -124,7 +131,8 @@ export async function POST(req: NextRequest) {
           sourceResults.push({ source, games: [] });
           emit({ source, error: message, games: [] });
         }
-      }));
+        if (i < sources.length - 1) await sleep(2000);
+      }
 
       // Store in cache after all scrapers complete
       await cache.set(cacheKey, {
