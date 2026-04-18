@@ -9,7 +9,7 @@ export interface CacheEntry {
   cachedAt: number;
 }
 
-const CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 function getCacheDir(): string {
   return process.env.CACHE_DIR ?? path.join(process.cwd(), '.cache');

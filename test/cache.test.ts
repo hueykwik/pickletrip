@@ -43,7 +43,7 @@ describe('cache.get', () => {
   });
 
   it('returns null and evicts expired memory entry', async () => {
-    const expired: CacheEntry = { ...SAMPLE_ENTRY, cachedAt: Date.now() - 5 * 60 * 60 * 1000 }; // 5h ago
+    const expired: CacheEntry = { ...SAMPLE_ENTRY, cachedAt: Date.now() - 25 * 60 * 60 * 1000 }; // 25h ago, past 24h TTL
     await cache.set('expired-key', expired);
     const result = await cache.get('expired-key');
     expect(result).toBeNull();
@@ -78,7 +78,7 @@ describe('cache.get', () => {
 
   it('returns null for expired file entry', async () => {
     const key = 'expired-file-key';
-    const expired: CacheEntry = { ...SAMPLE_ENTRY, cachedAt: Date.now() - 5 * 60 * 60 * 1000 };
+    const expired: CacheEntry = { ...SAMPLE_ENTRY, cachedAt: Date.now() - 25 * 60 * 60 * 1000 };
     await fs.mkdir(TEST_CACHE_DIR, { recursive: true });
     await fs.writeFile(path.join(TEST_CACHE_DIR, `${encodeURIComponent(key)}.json`), JSON.stringify(expired), 'utf-8');
 
