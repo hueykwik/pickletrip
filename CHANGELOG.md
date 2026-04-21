@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0.3] - 2026-04-21
+
+### Fixed
+- **Honolulu Forté returning 0 events**: Pickles at Forté's website redesigned their event-list page from a paginated list with direct CourtReserve links to a calendar view with no visible event anchors. The prior Playwright scraper found no matching link patterns and silently returned empty. Replaced with a fetch-only scraper that parses the Wix event JSON inlined in the server-rendered HTML. ~500ms vs. ~60s for the old browser-based approach, and an order of magnitude less brittle. Honolulu now returns ~24 Forté events in a 14-day window.
+
+### Changed
+- Forté scraper no longer launches Playwright or Chromium. Pure `fetch()` + regex + `JSON.parse`. Added a liveness check: if the page returns ≥100KB but no event blobs match, the scraper throws instead of silently returning `[]` — so future HTML-shape changes surface immediately rather than appearing as empty search results.
+
 ## [1.1.0.2] - 2026-04-17
 
 ### Removed
