@@ -88,96 +88,10 @@ describe('parseDate', () => {
   });
 });
 
-// ─── parseDateFromCRUrl (forte) ───────────────────────────────────────────────
-function parseDateFromCRUrl(url: string): Date | null {
-  const match = url.match(/[?&]date=(\d{4}-\d{2}-\d{2})/);
-  if (!match) return null;
-  const d = new Date(`${match[1]}T00:00:00-10:00`);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-// ─── parseDateFromSlug (forte) ────────────────────────────────────────────────
-function parseDateFromSlug(slug: string): Date | null {
-  const match = slug.match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (!match) return null;
-  const d = new Date(`${match[1]}-${match[2]}-${match[3]}T00:00:00`);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-// ─── parseTimeFromSlug (forte) ────────────────────────────────────────────────
-function parseTimeFromSlug(slug: string): string {
-  const dateMatch = slug.match(/\d{4}-\d{2}-\d{2}/);
-  if (!dateMatch) return '';
-  const afterDate = slug.slice((dateMatch.index ?? 0) + dateMatch[0].length);
-  const match = afterDate.match(/(\d{2})-(\d{2})(?:[^0-9]|$)/);
-  if (!match) return '';
-  const h = parseInt(match[1], 10);
-  const m = match[2];
-  const period = h >= 12 ? 'PM' : 'AM';
-  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  return `${h12}:${m} ${period}`;
-}
-
-describe('parseDateFromCRUrl (forte)', () => {
-  it('extracts date from ?date= param', () => {
-    const url = 'https://app.courtreserve.com/Online/PublicBookings/13816?eventId=123&date=2026-03-28';
-    const d = parseDateFromCRUrl(url);
-    expect(d).not.toBeNull();
-    // In HST (UTC-10), 2026-03-28T00:00:00-10:00 = 2026-03-28T10:00:00Z
-    expect(d!.toISOString()).toBe('2026-03-28T10:00:00.000Z');
-  });
-
-  it('extracts date from &date= param', () => {
-    const url = 'https://app.courtreserve.com/Online/PublicBookings/13816?eventId=456&date=2026-04-05';
-    const d = parseDateFromCRUrl(url);
-    expect(d).not.toBeNull();
-    expect(d!.toISOString()).toBe('2026-04-05T10:00:00.000Z');
-  });
-
-  it('returns null when no date param', () => {
-    expect(parseDateFromCRUrl('https://example.com/no-date')).toBeNull();
-  });
-});
-
-describe('parseDateFromSlug (forte)', () => {
-  it('extracts date from typical slug', () => {
-    const d = parseDateFromSlug('forte-skill-lab-intermediate-2026-03-28-09-00');
-    expect(d).not.toBeNull();
-    expect(d!.getFullYear()).toBe(2026);
-    expect(d!.getMonth()).toBe(2); // March
-    expect(d!.getDate()).toBe(28);
-  });
-
-  it('returns null for slug with no date', () => {
-    expect(parseDateFromSlug('no-date-in-here')).toBeNull();
-  });
-});
-
-describe('parseTimeFromSlug (forte)', () => {
-  it('parses AM time: "...-2026-03-28-09-00"', () => {
-    expect(parseTimeFromSlug('forte-skill-lab-2026-03-28-09-00')).toBe('9:00 AM');
-  });
-
-  it('parses PM time: "...-2026-03-28-14-30"', () => {
-    expect(parseTimeFromSlug('forte-open-play-2026-03-28-14-30')).toBe('2:30 PM');
-  });
-
-  it('handles noon: "...-2026-03-28-12-00"', () => {
-    expect(parseTimeFromSlug('forte-open-play-2026-03-28-12-00')).toBe('12:00 PM');
-  });
-
-  it('handles midnight: "...-2026-03-28-00-00"', () => {
-    expect(parseTimeFromSlug('forte-open-play-2026-03-28-00-00')).toBe('12:00 AM');
-  });
-
-  it('handles slug with extra word between date and time', () => {
-    expect(parseTimeFromSlug('forte-skill-lab-2026-03-28-advanced-09-00')).toBe('9:00 AM');
-  });
-
-  it('returns empty string when no time found', () => {
-    expect(parseTimeFromSlug('forte-open-play-2026-03-28')).toBe('');
-  });
-});
+// Forté tests moved to test/forte.test.ts. The legacy Playwright-based scraper
+// (which parsed dates from CourtReserve URL params and Wix event-detail slugs)
+// was replaced with a fetch-only scraper that reads the Wix event JSON inlined
+// in the server-rendered HTML. See extractEventsFromHtml + eventToGame.
 
 // ─── parseLevel (meetup) ──────────────────────────────────────────────────────
 function parseLevelMeetup(title: string, description: string): string | null {

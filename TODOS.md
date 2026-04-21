@@ -16,14 +16,6 @@
 
 ## Honolulu Agents — Follow-ups (from /autoplan review)
 
-- **Move CR org ID off hardcode in Forte agent**
-  **Priority:** P2
-  `forte.mjs` hardcodes `publicbookings/13816` in two places. Works for the single current venue. If a second Forté-type facility is added with a different CourtReserve org, it silently returns zero results. Fix: add `crOrgId: number` to `ForteFacility` type in `lib/cities.ts` and use it in the URL filter.
-
-- **Wix API fallback for Forte when Load More button not found**
-  **Priority:** P2
-  Wix sites expose a structured events API (`/_api/wix-one-events-server/events?`). If the Load More button selector breaks (Wix A/B tests UI without warning), use the API directly instead of Playwright pagination. Faster and more reliable.
-
 - **DRY: extract shared parse utilities to `lib/parsers.ts`**
   **Priority:** P3
   `parseLevel()` and `formatDate()` are duplicated across `courtreserve.mjs`, `forte.mjs`, `meetup.mjs`, and `playbypoint.mjs`. Each has slightly different logic, which will cause inconsistent level display. A shared `lib/parsers.ts` would fix this and make future agent additions cleaner.
