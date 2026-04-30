@@ -10,4 +10,6 @@ export interface Game {
   url: string;
   price: string | null;
   city: string;
+  /** Display name of the facility/group that produced this game (e.g. Meetup group name) */
+  facilityName?: string;
 }

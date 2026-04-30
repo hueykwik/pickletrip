@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1.0] - 2026-04-29
+
+### Added
+- **Singapore**: 6 facilities — 2 PlayByPoint venues (The Cage @ Jurong East, The Cage @ Punggol) and 4 Meetup groups (Singapore Pickleball, Pickleball SG, ABC Pickleball, Orchard Pickleball). Aliases: `singapore`, `sg`, `jurong`, `punggol`, `ang mo kio`, `orchard`.
+- **Seoul**: 3 Meetup groups (Seoul Pickleball Club, Korea Pickleball, Han River Pickleball). Aliases: `seoul`, `korea`. Note: many Seoul games are scheduled on Instagram — Meetup captures the publicly-listed subset.
+
+### Fixed
+- **Meetup games showing wrong timezone**: all Meetup events were displaying times in Hawaii time (Pacific/Honolulu) regardless of the city. Each Meetup facility now carries its own IANA timezone, so Singapore games show SGT, Seoul shows KST, and US cities show the correct local time.
+- **Singapore Meetup games showing "via Oahu Pickleball Association"**: the facility attribution label was hardcoded for the original Honolulu-only Meetup integration. The "via" label now reflects the actual Meetup group name per game.
+
 ## [1.1.0.3] - 2026-04-21
 
 ### Fixed

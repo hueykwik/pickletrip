@@ -60,15 +60,15 @@ function parseLevel(title, description) {
 /**
  * Format a Date to "Day, Mon DD" e.g. "Sat, Mar 28"
  */
-function formatDate(d) {
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'Pacific/Honolulu' });
+function formatDate(d, timeZone) {
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: timeZone ?? 'UTC' });
 }
 
 /**
  * Format a Date to "H:MM AM/PM"
  */
-function formatTime(d) {
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Pacific/Honolulu' });
+function formatTime(d, timeZone) {
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: timeZone ?? 'UTC' });
 }
 
 /**
@@ -138,9 +138,10 @@ export async function scrapeMeetup(facilities, dateFrom, dateTo) {
           id: `meetup-${node.id}`,
           source: 'meetup',
           venue: venue?.name || facility.name,
+          facilityName: facility.name,
           programName: node.title,
-          date: formatDate(d),
-          time: formatTime(d),
+          date: formatDate(d, facility.timeZone),
+          time: formatTime(d, facility.timeZone),
           status: 'open',
           level: parseLevel(node.title, ''),
           url: node.eventUrl,

@@ -27,6 +27,8 @@ export interface MeetupFacility {
   city: string;
   /** Meetup group URL name, e.g. "oahu-pickleball-association" */
   groupUrlname: string;
+  /** IANA timezone for date/time display, e.g. "Pacific/Honolulu". Defaults to UTC if omitted. */
+  timeZone?: string;
 }
 
 export interface HoluaFacility {
@@ -118,6 +120,7 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Oahu Pickleball Association',
         city: 'Honolulu',
         groupUrlname: 'oahu-pickleball-association',
+        timeZone: 'Pacific/Honolulu',
       },
     ],
   },
@@ -157,12 +160,14 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Silly Pickles Pickleball SF',
         city: 'San Francisco',
         groupUrlname: 'silly-pickles-pickleball-san-francisco',
+        timeZone: 'America/Los_Angeles',
       },
       {
         source: 'meetup',
         name: 'BAY PICKLEBALL',
         city: 'San Francisco',
         groupUrlname: 'bay-pickleball',
+        timeZone: 'America/Los_Angeles',
       },
     ],
   },
@@ -174,12 +179,14 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Berkeley/Oakland Pickleball',
         city: 'Oakland',
         groupUrlname: 'Berkeley-Pickle-Ball-Meetup-Group',
+        timeZone: 'America/Los_Angeles',
       },
       {
         source: 'meetup',
         name: 'Bay Area Pickleball Alliance',
         city: 'Richmond',
         groupUrlname: 'Bay-Area-Pickleball-Alliance',
+        timeZone: 'America/Los_Angeles',
       },
     ],
   },
@@ -226,6 +233,7 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Seattle Pickleball',
         city: 'Seattle',
         groupUrlname: 'seattle-pickleball',
+        timeZone: 'America/Los_Angeles',
       },
     ],
   },
@@ -313,6 +321,7 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Atlanta Indoor Pickleball',
         city: 'Atlanta',
         groupUrlname: 'atlanta-pickleball',
+        timeZone: 'America/New_York',
       },
     ],
   },
@@ -344,6 +353,7 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         name: 'Pickleball for Fun!',
         city: 'New York',
         groupUrlname: 'pickleball-fun',
+        timeZone: 'America/New_York',
       },
     ],
   },
@@ -374,18 +384,94 @@ const METRO_AREAS: Record<string, { label: string; facilities: FacilityConfig[] 
         city: 'Miami',
         // Note: canonical slug has double-l typo — this is the correct Meetup URL name
         groupUrlname: 'pickellball-miami',
+        timeZone: 'America/New_York',
       },
       {
         source: 'meetup',
         name: 'Boca Raton Pickleball',
         city: 'Boca Raton',
         groupUrlname: 'boca-raton-pickleball-meetup-group',
+        timeZone: 'America/New_York',
       },
       {
         source: 'meetup',
         name: 'Fort Lauderdale Pickleball League',
         city: 'Fort Lauderdale',
         groupUrlname: 'east-fort-lauderdale-pickleball-league',
+        timeZone: 'America/New_York',
+      },
+    ],
+  },
+  'singapore': {
+    label: 'Singapore',
+    facilities: [
+      // PlayByPoint venues
+      {
+        source: 'playbypoint',
+        name: 'Performance Pickleball',
+        city: 'Punggol',
+        url: 'https://performancepickleball.playbypoint.com',
+      },
+      {
+        source: 'playbypoint',
+        name: 'Straits Pickle Club',
+        city: 'Jurong East',
+        url: 'https://straitspickleclub.playbypoint.com',
+      },
+      // Meetup groups
+      {
+        source: 'meetup',
+        name: 'Singapore Pickleball Social Group',
+        city: 'Singapore',
+        groupUrlname: 'singapore-pickleballsocialgroup',
+        timeZone: 'Asia/Singapore',
+      },
+      {
+        source: 'meetup',
+        name: 'Singapore Pickleball Meetup Group',
+        city: 'Singapore',
+        groupUrlname: 'singapore-pickleball-meetup-group',
+        timeZone: 'Asia/Singapore',
+      },
+      {
+        source: 'meetup',
+        name: 'Drop Reset Pickleball Social Club',
+        city: 'Singapore',
+        groupUrlname: 'drop-reset-pickleball-social-club',
+        timeZone: 'Asia/Singapore',
+      },
+      {
+        source: 'meetup',
+        name: 'Pickleball Ang Mo Kio',
+        city: 'Ang Mo Kio',
+        groupUrlname: 'pickleball-ang-mo-kio',
+        timeZone: 'Asia/Singapore',
+      },
+    ],
+  },
+  'seoul': {
+    label: 'Seoul, South Korea',
+    facilities: [
+      {
+        source: 'meetup',
+        name: 'Seoul Pickleball Community',
+        city: 'Seoul',
+        groupUrlname: 'seoul-pickleball-community',
+        timeZone: 'Asia/Seoul',
+      },
+      {
+        source: 'meetup',
+        name: 'Spomotive Pickleball Community',
+        city: 'Seoul',
+        groupUrlname: 'spomotive-pickleball-community',
+        timeZone: 'Asia/Seoul',
+      },
+      {
+        source: 'meetup',
+        name: 'Seoul x Pickleball',
+        city: 'Seoul',
+        groupUrlname: 'seoul-x-pickleball',
+        timeZone: 'Asia/Seoul',
       },
     ],
   },
@@ -511,6 +597,20 @@ const METRO_ALIASES: Record<string, string> = {
   'pompano beach': 'south-florida',
   'hollywood': 'south-florida',
   'hallandale': 'south-florida',
+  // Singapore
+  'singapore': 'singapore',
+  'sg': 'singapore',
+  'jurong': 'singapore',
+  'jurong east': 'singapore',
+  'punggol': 'singapore',
+  'ang mo kio': 'singapore',
+  'amk': 'singapore',
+  'orchard': 'singapore',
+  'cbd': 'singapore',
+  // Seoul
+  'seoul': 'seoul',
+  'korea': 'seoul',
+  'south korea': 'seoul',
 };
 
 /**

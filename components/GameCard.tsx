@@ -4,7 +4,6 @@ const SOURCE_LABELS: Record<string, string> = {
   playbypoint: 'PlayByPoint',
   courtreserve: 'CourtReserve',
   forte: 'Pickles at Forté',
-  meetup: 'Oahu Pickleball Association',
   podplay: 'PodPlay',
 };
 
@@ -114,7 +113,7 @@ export default function GameCard({ game }: { game: Game }) {
           View &amp; join →
         </a>
         <span style={{ fontSize: '0.6875rem', color: 'var(--color-faint)' }}>
-          via {SOURCE_LABELS[game.source] ?? game.source}
+          via {game.facilityName ?? SOURCE_LABELS[game.source] ?? game.source}
         </span>
       </div>
     </div>
